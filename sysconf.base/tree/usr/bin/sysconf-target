@@ -514,6 +514,10 @@ script_command_status() {
                 echo "Driver: $current_driver"
                 echo "State: $driver_target_state"
                 echo "Available: $_available"
+                if [ $_available = yes ]; then
+                    echo -n "ID: "
+                    (driver_${current_driver}_exec --hybrid id)
+                fi
                 driver_${current_driver}_status
                 nef_log
             fi
@@ -606,11 +610,27 @@ target_load() {
     current_target="$1"
     current_driver=$(echo "$current_target" | sed 's/:.*//')
     current_target_id=$(echo "$current_target" | sed -r 's/^[^:]+://')
+    current_target_name=$(echo $current_target_id | sed 's/#.*//')
+    declare -g -A current_target_options
+    local next=$(echo "$current_target_id" | sed -r 's/^[^#]+#?//')
+
+    while true; do
+        local param=$(echo "$next" | sed 's/#.*//')
+        local name=$(echo "$param" | sed 's/:.*//')
+        [ -z "$name" ] && break;
+
+        local value=$(echo "$param" | sed -r 's/^[^:]+:?//')
+        nef_log -v "current_target_options[$name]=${value:-1}"
+        current_target_options[$name]=${value:-1}
+        next=$(echo $next | sed -r 's/^[^#]+#?//')
+    done
+
     driver_target_state=unknown
 
     nef_log -v "Current driver: $current_driver"
     nef_log -d "Current target: $current_target"
     nef_log -d "Current target ID: $current_target_id"
+    nef_log -d "Current target name: $current_target_name"
 
     declare -f driver_${current_driver}_load >/dev/null \
         || nef_fatal "invalid target driver: ${current_driver}
@@ -686,12 +706,12 @@ driver_common_local_exec() {
 #     target, but it works with the --hybrid option.
 ##
 driver_local_load() {
-    [[ "$current_target_id" =~ ^[^:]*(:[^:]+)?$ ]] \
+    [[ "$current_target_name" =~ ^[^:]*(:[^:]+)?$ ]] \
         || nef_fatal "invalid ROOT-DIR target format
 
 HINT: for information, run: $nef_command_name drivers local"
     local _ifs="$IFS"; IFS=:
-    local _parts=($current_target_id); IFS="$_ifs"
+    local _parts=($current_target_name); IFS="$_ifs"
 
     driver_local_root_dir=${_parts[0]-/}
     current_prefix=${driver_local_root_dir%/}
@@ -737,7 +757,7 @@ driver_local_exec() {
 #     This is like running 'ssh USER@HOST COMMAND'.
 ##
 driver_ssh_load() {
-    driver_ssh_userhost=$current_target_id
+    driver_ssh_userhost="$current_target_name"
 
     [ -z "$GIT_SSH_COMMAND" ] && GIT_SSH_COMMAND=ssh
 }
@@ -754,24 +774,36 @@ driver_ssh_exec() {
     # So we need to pass a shell command lines (wrapping args with quotes).
 
     local _argv=()
+    local _stop_options=no
     # local _sh_c=""
 
     while [ -n "$1" ]; do
         case "$1" in
             --hybrid) shift ;;
-            # -c) _sh_c="$_sh_c '$2'"; shift 2 ;;
-            -c) _argv=("${_argv[@]}" "$2"); shift 2 ;;
-            # --) shift; _argv=("${_argv[@]}" "$@"); shift $# ;;
-            --) shift ;;
-            # *) _sh_c="$_sh_c '$1'"; shift ;;
+            -c)
+                if [ $_stop_options = yes ]; then
+                    _argv=("${_argv[@]}" "'$1'")
+                else
+                    _argv=("${_argv[@]}" sh -c "'$2'")
+                fi
+                shift 2 ;;
+            --) _stop_options=yes; shift ;;
             *) _argv=("${_argv[@]}" "'$1'"); shift ;;
         esac
     done
 
-    nef_log -v "driver_ssh_exec <$driver_ssh_userhost> ${_argv[*]}"
+    local _prepend=()
+    if [ -n "${current_target_options[sudo]}" ]; then
+        _prepend=("${_prepend[@]}" sudo)
+        if [ "${current_target_options[sudo]}" != 1 ]; then
+            _prepend=("${_prepend[@]}" -u "${current_target_options[sudo]}")
+        fi
+    fi
+
+    nef_log -v "driver_ssh_exec <$driver_ssh_userhost> ${_prepend[@]} ${_argv[*]}"
     # nef_log -v "driver_ssh_exec <$driver_ssh_userhost> ${_sh_c}"
     # exec ssh $driver_ssh_userhost $_sh_c
-    exec ssh $driver_ssh_userhost -- "${_argv[@]}"
+    exec ssh $driver_ssh_userhost -- "${_prepend[@]}" "${_argv[@]}"
 }
 
 
@@ -798,7 +830,7 @@ driver_lxc_create_opts=
 
 driver_lxc_load() {
     driver_lxc_check_env
-    driver_lxc_container_name=$current_target_id
+    driver_lxc_container_name=$current_target_name
     driver_lxc_refresh_state
 }
 driver_lxc_check_env() {
@@ -985,8 +1017,8 @@ HINT: Create it with: $0 init $current_target /path/to/sysconf"
             ;;
     esac
 
-    nef_log -v "driver_lxc_exec <$current_target_id> ${_argv[*]}"
-    exec lxc-attach --clear-env -n $current_target_id -- env USER=root HOME=/root TERM="$TERM" "${_argv[@]}"
+    nef_log -v "driver_lxc_exec <$current_target_name> ${_argv[*]}"
+    exec lxc-attach --clear-env -n $current_target_name -- env USER=root HOME=/root TERM="$TERM" "${_argv[@]}"
 }
 
 driver_lxc_refresh_state() {
@@ -1049,12 +1081,12 @@ driver_lxc_refresh_state() {
 #     This is like upgrading IMAGE with each subsequent attached COMMAND.
 ##
 driver_docker_load() {
-    [[ "$current_target_id" =~ ^[a-zA-Z0-9_-]*(:[a-zA-Z0-9_-]+)?$ ]] \
+    [[ "$current_target_name" =~ ^[a-zA-Z0-9_-]*(:[a-zA-Z0-9_-]+)?$ ]] \
         || nef_fatal "invalid CONTAINER:IMAGE target format
 
 HINT: for information, run: $nef_command_name drivers docker"
     local _ifs="$IFS"; IFS=:
-    local _parts=($current_target_id); IFS="$_ifs"
+    local _parts=($current_target_name); IFS="$_ifs"
 
     driver_docker_container=${_parts[0]}
     driver_docker_image=${_parts[1]}
@@ -1070,15 +1102,15 @@ driver_docker_status() {
     fi
 }
 driver_docker_create() {
-    driver_docker_orig_target_id=$current_target_id
-    current_target_id=$(mktemp -d)
+    driver_docker_orig_target_id=$current_target_name
+    current_target_name=$(mktemp -d)
     # driver_dockerfile_dir=$(mktemp -d)
     # current_driver=dockerfile
     driver_dockerfile_load
     driver_dockerfile_create
 }
 driver_docker_create_end() {
-    current_target_id=$driver_docker_orig_target_id
+    current_target_name=$driver_docker_orig_target_id
     driver_docker_orig_target_id=
     current_driver=docker
     driver_docker_load
@@ -1123,7 +1155,7 @@ driver_docker_exec() {
     [ -n "$driver_docker_container" ] \
         && nef_fatal "'docker exec' not supported yet; cannot attach to an existing container"
 
-    nef_log -v "driver_docker_exec <$current_target_id> ${_argv[*]}"
+    nef_log -v "driver_docker_exec <$current_target_name> ${_argv[*]}"
     docker run -i -t "$driver_docker_image" "${_argv[@]}"
     local _status=$?
     local _container_id=$(docker ps -n=1 -q)
@@ -1165,7 +1197,7 @@ driver_docker_exec() {
 #     The --hybrid option is for safety of confirmation.
 ##
 driver_dockerfile_load() {
-    driver_dockerfile_dir=$current_target_id
+    driver_dockerfile_dir=$current_target_name
     current_prefix=$driver_dockerfile_dir
     current_driver_local=yes
     current_driver_sysconf_install=no
@@ -1239,7 +1271,7 @@ driver_dockerfile_exec() {
 ##
 
 driver_vbox_load() {
-    driver_vbox_vm=$current_target_id
+    driver_vbox_vm=$current_target_name
     which vboxmanage >/dev/null \
         || nef_fatal "Could not find the 'vboxmanage' program. You need to install the 'virtualbox' package."
     driver_vbox_refresh_state
@@ -1294,7 +1326,7 @@ HINT: Create it with: $0 init $current_target /path/to/sysconf"
     esac
 
     local _command="${_argv[0]}"; unset _argv[0]
-    nef_log -v "driver_vbox_exec <$current_target_id> ${_argv[*]}"
+    nef_log -v "driver_vbox_exec <$current_target_name> ${_argv[*]}"
     exec vboxmanage guestcontrol $driver_vbox_vm execute $_command --username root -- "${_argv[@]}"
 }
 

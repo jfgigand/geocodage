@@ -177,13 +177,13 @@ compile_conf_rec()
     done
     sysconf_compiled_confs=(${sysconf_compiled_confs[@]} $config)
 
-    [ -d $config/tree ] && {
+    if [ -d $config/tree ]; then
 	nef_log "Merging tree: $confpath/$config/tree/"
-	local_cp -sr $confpath/$config/tree/* $confpath/compiled/
-    }
-    # || {
-    # nef_log -v "Ignoring tree-less conf: $config"
-    # }
+	local_cp -srn $confpath/$config/tree/* $confpath/compiled/ \
+            2>&1 | grep -v "cannot create symbolic link" >&2
+        # else
+	# nef_log "Ignoring tree-less conf: $config"
+    fi
     for dep in `cat $config/deps`; do
 	compile_conf_rec $dep
     done
@@ -222,8 +222,8 @@ load_environment_for_conf_rec()
     if [ -r environment.rc ]; then
 	nef_log -v "Loading environment: $config"
         . environment.rc
-    # else
-    #     nef_log -v "Environment not defined: $config"
+        # else
+        #     nef_log -v "Environment not defined: $config"
     fi
 }
 
@@ -277,7 +277,12 @@ update_system_from_conf_rec()
 add_file()
 {
     local config="$1"
-    local file="$2"
+    local file=
+    if which realpath 2>/dev/null; then
+        file=$(realpath --no-symlinks "$2")
+    else
+        file="$(cd "$(dirname "$2")"; pwd)/$(basename "$2")"
+    fi
     local target="$confpath/$config/tree$file"
 
     [ -f "$file" ] || nef_fatal "warning: arg is not a regular file: $file"
@@ -338,6 +343,34 @@ sysconf_require_packages()
         # sysconf_apt-get install --yes --no-upgrade $_packages
         sysconf_apt-get install --yes --force-yes -o Dpkg::Options::=--force-confdef --no-upgrade $_packages
     fi
+}
+sysconf_fix_directory()
+{
+    local _dir="$1"
+    local _mode="$2"
+    local _ownership="$3"
+
+    if [ ! -d "$_dir" ]; then
+        echo "Creating missing directory: $_dir"
+        mkdir -p "$_dir"
+        [ -n "$_mode" ] && chmod $_mode "$_dir"
+        [ -n "$_ownership" ] && chown "$_ownership" "$_dir"
+    fi
+}
+sysconf_fix_user()
+{
+    local _name="$1"
+    shift
+
+    grep -q ^$_name: /etc/passwd || {
+        echo "Creating missing user: $_name"
+        useradd "$@" $_name
+        local _home="~$_name"
+        mkdir -p $_home/.ssh
+        chmod 750 $_home/.ssh
+        cp "~root/.ssh/authorized_keys" $_home/.ssh/
+        chown -R $_name:$_name $_home
+    }
 }
 
 ######################################################################

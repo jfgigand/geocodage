@@ -178,6 +178,7 @@ nef_fatal() {
     [ -n "$_status" ] && exit $_status;
 }
 
+nef_fatal_usage_option="--help"
 nef_fatal_usage() {
     local _msg="$1"
     if [ "x$1" = x ]; then
@@ -186,7 +187,7 @@ nef_fatal_usage() {
         _msg="USAGE ERROR: $*"
     fi
     nef_log "$_msg"
-    nef_log "type ${nef_command_callname} --help for command usage"
+    nef_log "type ${nef_command_callname} ${nef_fatal_usage_option} for command usage"
     # echo
     # nef_show_usage
     exit 1;
