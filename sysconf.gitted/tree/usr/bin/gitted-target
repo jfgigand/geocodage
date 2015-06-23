@@ -80,6 +80,12 @@ script_command_commit() {
         esac
     done
 
+    local _target=
+    if script_is_target_id "${_argv[0]}"; then
+        _target="${_argv[0]}"
+        unset _argv[0]
+    fi
+
     if [ -z "$_author" ]; then
         _author=$(git config user.name)
         local _email=$(git config user.email)
@@ -91,7 +97,7 @@ script_command_commit() {
         _argv=(--author "$_author" "${_argv[@]}")
     fi
 
-    script_server_command commit "${_argv[@]}"
+    script_server_command commit $_target "${_argv[@]}"
 }
 
 # command: reset [<target>]  <state branches>  [--to <commit>] [<mode>]
@@ -164,17 +170,14 @@ script_command_init() {
     "$sysconf_target_script" init $_target "${_target_init_opts[@]}" \
         || _fail "sysconf-target init $_target"
 
-        local _name=$(echo $_target | cut -d: -f2)
-        nef_log "Adding and fetching git remote: $_name -> gitted:$_target"
-        git config remote.gitted.url >/dev/null \
-            || git remote add $_name gitted:$_target
-        [ $? -eq 0 ] || nef_log "WARNING: failed to add git remote '$_name': gitted:$_target"
-        git fetch $_name
+        script_add_target_remote "$_target"
 }
 
-# command: register [what] [git-config-scope]
+# command: register [what] [git-config-scope] [<target>]
 #
 # Copy gitted-target to a stable location and configure Git for easy use
+#
+# Optionally, add <target> as a Git remote.
 #
 # To ensure gitted-target availability within the scope specified by
 # [git-config-scope], the script is copied to the appropriate location,
@@ -252,7 +255,8 @@ script_command_register() {
         esac
     done
 
-    [ "${#_argv[@]}" -gt 0 ] && nef_fatal_usage_command register "too many arguments"
+    [ "${#_argv[@]}" -gt 1 ] && nef_fatal_usage_command register "too many arguments"
+    local _target="${_argv[0]}"
 
     # Copy the script
     if [ $_no_copy = yes ]; then
@@ -319,6 +323,8 @@ HINT: give --force to overwrite, specify --file or run the right $nef_command_na
         fi
         _git_config_cmd "url.ext::${_dir_spec}/gitted-target %S .insteadOf" "${_url_scheme}:"
     fi
+
+    [ -n "$_target" ] && script_add_target_remote "$_target"
 }
 
 # command: git-upload-pack <target>
@@ -461,6 +467,17 @@ script_is_target_id() {
     [[ "$1" =~ : ]]
 }
 
+# Register target as a Git remote and make a git-fetch(1) on it
+script_add_target_remote() {
+    local _target="$1"
+    local _name=$(echo $_target | cut -d: -f2)
+    nef_log "Adding and fetching git remote: $_name -> gitted:$_target"
+    git config "remote.${_name}.url" >/dev/null \
+        || git remote add "$_name" "gitted:$_target"
+    [ $? -eq 0 ] || nef_log "WARNING: failed to add git remote '$_name': gitted:$_target"
+    git fetch "$_name"
+}
+
 script_target_exec() {
     local _target="$1"
     shift
@@ -493,7 +510,7 @@ script_server_command() {
         # echo remote: $_remote
         _target=$(git config remote.${_remote}.url)
         if [ -z "$_target" ]; then
-            (nef_fatal_usage_command "$_command" --status ""  \
+            (nef_fatal_usage_command "$_command"  \
                 "Please specify the gitted target, as current branch has no upstream: $(git symbolic-ref -q HEAD)")
             echo >&2
             error_on_missing_default_upstream ted "run 'gitted $_command'" "on" >&2

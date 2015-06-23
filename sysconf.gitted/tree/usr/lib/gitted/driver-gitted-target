@@ -115,13 +115,14 @@ gitted_driver_commit() {
     # [ $_status -eq 0 ] \
     #     || nef_fatal --status $? "gitted-target commit failed with status $? on target: $driver_target"
     (
+        echo Running: gitted-target commit "$driver_target" "$driver_target_branch" "${_opts[@]}" >&2
         gitted-target commit "$driver_target" "$driver_target_branch" "${_opts[@]}" 2>&1
         _status=$?
         [ $_status = 2 ] && exit 0
         [ $_status -eq 0 ] \
             || nef_fatal --status $_status "gitted-target commit failed with status $_status on target: $driver_target"
     ) | sed "s/^/${driver_target}: /" >&2
-    [ ${PIPESTATUS[0]} -eq 0 ] || exit ${PIPESTATUS[0]}
+    [ ${PIPESTATUS[0]} -eq 0 ] #|| exit ${PIPESTATUS[0]}
 
     git fetch "ext::gitted-target %S $driver_target" "$driver_target_branch" >&2
     git rev-parse --verify FETCH_HEAD # print full commit ID as we are expected to

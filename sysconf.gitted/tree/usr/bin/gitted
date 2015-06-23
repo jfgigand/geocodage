@@ -433,9 +433,12 @@ script_command_reset() {
 
     local _tmp_ref=$(script_make_ref_date_prefix).commit
     local i=0
-    local _ok=yes
+    local _errors=0
+    local _error_branches=
+
     for _state_branch in $_expanded_branches; do
         (
+            local _ok=yes
             # nef_log "branch: $_state_branch"
             script_load_state_config $_state_branch || exit # terminate sub-shell
 
@@ -488,13 +491,26 @@ script_command_reset() {
                 echo "[${_state_branch} ${_commit:0:7}] ${_state}Reset OK to: $(script_format_commit_label $_commit)"
             fi
 
-        ) || exit $? #nef_fatal "state branch failed to be reset: $_state_branch"
-        (( i++ ))
+            [ $_ok = yes ]
+
+        )
+        if [ $? -eq 0 ]; then
+            (( i++ ))
+        else
+            (( _errors++ ))
+            _error_branches="$_error_branches $_state_branch"
+            # nef_fatal "state branch failed to be reset: $_state_branch"
+        fi
     done
 
-    if [ $i -gt 0 ]; then
-        [ "$_ok" = yes ]
-        return
+    # [ $i -eq 0 ] && nef_log "No reset happened actually."
+
+    if [ $_errors -gt 0 ]; then
+        nef_log "$_errors branches failed to be reset: $_error_branches"
+        return 2
+    fi
+
+    return 0
 
         # test -n ""
         # nef_log "$i branch(es) were reset successfully."
@@ -504,11 +520,6 @@ script_command_reset() {
         #     || nef_fatal "failed to copy the refs from: $GIT_DIR/$_tmp_ref/*"
         # rm -rf $GIT_DIR/$_tmp_ref
         # nef_log "Done."
-    else
-        nef_log
-        nef_log "No reset happened actually."
-        exit 2
-    fi
 }
 
 ######################################################################
@@ -543,7 +554,7 @@ script_command_reset() {
 #
 # This command initializes the local system with a Gitted repository.
 #
-# /local/repository.git and hooks are created/fixed for use by Gitted.
+# /local.repository.git and hooks are created/fixed for use by Gitted.
 # State branches are initialized (command "init" of drivers).
 #
 # It is safe to run "init" multiples times : no data will be erased, like with git-init(1).
@@ -611,7 +622,7 @@ script_command_git-upload-pack() {
     exec git upload-pack $GIT_DIR
 }
 
-# command: git-receive-pack
+# command: git-receive-pack [--push-mode <mode>]
 #
 # Forward Git protocol to /local/repository.git
 #
@@ -664,16 +675,17 @@ script_command_git-hook-pre-receive() {
 
     [ "${#_argv[@]}" -gt 0 ] && nef_fatal_usage_command git-receive-pack "too many arguments"
 
-    nef_log "gitted: hook-pre-receive: doing nothing"
+    return 0
+    # nef_log "gitted: hook-pre-receive: doing nothing"
     # script_command_status --quiet
 }
 
 # command: git-hook-update <ref-name> <old-commit> <new-commit>
 #
-# Update IO work state with new commit
+# Update a state branch
 #
 # This command should not be used directly, but be called by
-# /local.repository.git/hooks/update (run 'gitted init' to setup).
+# /local.repository.git/hooks/update (setup with 'gitted init').
 ##
 script_command_git-hook-update() {
     local _argv=()
@@ -691,7 +703,7 @@ script_command_git-hook-update() {
     [ "${#_argv[@]}" -gt 3 ] && nef_fatal_usage_command git-receive-pack "too many arguments"
 
     local _branch=${_argv[0]#refs/heads/}
-    nef_log "gitted: hook-update (branch=$_branch) on ref: ${_argv[@]}"
+    nef_log "gitted: hook-update (branch=$_branch) on ref: ${_argv[0]}: ${_argv[1]:0:7} -> ${_argv[2]:0:7}"
     script_command_reset --state-only --keep $_branch --to ${_argv[2]}
 }
 
