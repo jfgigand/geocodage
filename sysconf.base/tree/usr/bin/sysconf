@@ -285,7 +285,7 @@ add_file()
     fi
     local target="$confpath/$config/tree$file"
 
-    [ -f "$file" ] || nef_fatal "warning: arg is not a regular file: $file"
+    [ -f "$file" -o -h "$file" ] || nef_fatal "warning: arg is not a regular file: $file"
     [ -r "$target" ] && nef_fatal "warning: repository path already exists: $target"
 
     dir=$(dirname "$target")
@@ -308,10 +308,15 @@ run_cmd()
     shift
     chdir_confpath
     cd $config
-    nef_log "*** In conf dir '$PWD' running: $command $@"
+    echo >&2
+    nef_log "********************************************************************************"
+    nef_log "*** RUNNING: $command $@ *** IN DIRECTORY: $PWD"
     "$command" "$@"
 
     for dep in `cat deps`; do
+        [[ "$_processed" =~ $dep ]] && continue
+        _processed="$_processed $dep"
+
 	run_cmd "$dep" "$command" "$@"
     done
 }
@@ -340,8 +345,15 @@ sysconf_require_packages()
 
     if [ -n "$_packages" ]; then
         export DEBIAN_FRONTEND=noninteractive
+
+        [ $(date "+%Y-%m-%d") = "$(stat /var/lib/apt/lists -c "%y" | sed 's/ .*//')" ] \
+            || apt-get update
+
         # sysconf_apt-get install --yes --no-upgrade $_packages
-        sysconf_apt-get install --yes --force-yes -o Dpkg::Options::=--force-confdef --no-upgrade $_packages
+        sysconf_apt-get install \
+                        --yes --force-yes -o Dpkg::Options::=--force-confdef \
+                        --no-upgrade --no-install-recommends \
+                        $_packages
     fi
 }
 sysconf_fix_directory()
@@ -573,6 +585,15 @@ while [ "$1" != "" ]; do
             else
                 $command | grep "$filter"
             fi
+            ;;
+
+        environment)
+            nef_read_args "$@"
+            shift $((OPTIND-1))
+            load_environment
+	    prefix="$1"
+	    shift
+            set | grep "^$prefix"
             ;;
 
         help)

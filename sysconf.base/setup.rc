@@ -33,7 +33,7 @@ grep -q $bashrcdir $bashrcfile || cat >>$bashrcfile <<EOF
 # (added by $0 on $(date))
 if [ -d $bashrcdir ]; then
   for i in $bashrcdir/*.sh; do
-    if [ -r $i ]; then
+    if [ -r \$i ]; then
       . \$i
     fi
   done

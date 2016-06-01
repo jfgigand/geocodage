@@ -20,6 +20,7 @@
 #
 
 [ -z "$nef_command_name" ] && nef_command_name="$(basename "$0")"
+[ -z "$nef_hostname" ] && nef_hostname="$(/bin/hostname)"
 [ -z "$nef_command_prefix" ] && nef_command_prefix="nef_command" # new spec is: "script"
 lib_shell_command_path="${BASH_SOURCE[0]}"
 
@@ -42,6 +43,7 @@ nef_command_init_options()
 nef_log() {
     [ "x$NEF_LOG_FILE" = x ] && NEF_LOG_FILE="$LOG_FILE" # Legacy compat
 
+    local _echo=yes
     declare _opt_verbose=no
     declare _opt_debug=no
     declare _opt_prepend=""
@@ -60,27 +62,28 @@ nef_log() {
 
     done
 
-    [ $_opt_verbose = yes -a x$nef_opt_show_verbose = xno ] && return 0
     [ $_opt_debug = yes -a x$nef_opt_show_debug = xno ] && return 0
+    [ $_opt_verbose = yes -a x$nef_opt_show_verbose = xno ] && _echo=no
 
     local txt="$*"
     local line="$*"
     local prefix="$NEF_LOG_PREFIX"
-    [ -z "$prefix" -a "$NEF_LOG_NO_PREFIX" != yes ] && prefix="$nef_command_name"
+    [ -z "$prefix" -a "$NEF_LOG_NO_PREFIX" != yes ] && prefix="$nef_command_name@$nef_hostname"
     [ -n "$prefix" -a "$NEF_LOG_PREFIX_NOCOLUMN" != yes ] && prefix="${prefix}: "
     # prefix=$(basename $0)
 
-    if [ "x$NEF_LOG_DATE" = xyes ]; then
-        date="`date +'%Y-%m-%d %H:%M:%S:%N' | sed -E 's/.{6}$//'`"
-        prefix="$prefix $date"
+
+    if [ $_echo = yes ]; then
+        echo "${prefix}${_opt_prepend}${line}" >&2
+        logger -t "${nef_command_name}" "${_opt_prepend}${line}"
     fi
 
-    line="${prefix}${_opt_prepend}${line}"
-
-    if [ "$NEF_LOG_FILE" = "" ]; then
-        echo "$line" >&2
-    else
-        echo "$line" | tee -a $LOG_FILE >&2
+    if [ "$NEF_LOG_FILE" != "" ]; then
+        if [ "x$NEF_LOG_DATE" = xyes ]; then
+            date="`date +'%Y-%m-%d %H:%M:%S.%N' | sed -E 's/.{6}$//'`"
+            prefix="$date $prefix"
+        fi
+        echo "${prefix}${_opt_prepend}${line}" >>"$NEF_LOG_FILE"
     fi
 }
 
@@ -162,9 +165,11 @@ nef_cmd()
 nef_fatal() {
     local _status=1
     local _prefix="FATAL ERROR: "
+
     while [ "$1" != "" ]; do
         case "$1" in
             --status) _status="$2"; shift 2 ;;
+            -ne) _status=; shift ;;
             --warn) _status=; _prefix="WARNING: "; shift ;;
             --) shift; break ;;
             -*) nef_log "nef_fatal(): bad option: $1"; shift ;;
@@ -223,7 +228,7 @@ nef_command_merge_env() {
     local _path=/etc/default/$nef_command_name
 
     if [ -f $_path ]; then
-        nef_log -v "loading defaults from $_path"
+        nef_log -v "Loading defaults from $_path"
         . $_path
     fi
 }
