@@ -9,7 +9,7 @@ _packages=
 # Textree
 # Install NodeJS and fix bon/node -> nodejs
 # python and build-essential are required to build the nodegit module
-_packages="$_packages nodejs python build-essential memcached"
+_packages="$_packages ca-certificates nodejs python build-essential memcached"
 
 if [ "$SYSCONF_TEXTREE_ENABLE_NGINX" != no ]; then
     # NginX
