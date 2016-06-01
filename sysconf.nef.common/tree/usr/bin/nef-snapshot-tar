@@ -1,0 +1,93 @@
+#!/bin/bash
+
+nef_command_name=nef-snapshot-tar
+nef_command_prefix=script_command
+
+script_dir=$(dirname $(readlink -f $0))
+PATH=$script_dir:$script_dir/../share/nef-common:$script_dir/../../../../sysconf.base/tree/usr/share/nef-common:/usr/share/nef-common . shell-command || exit 2
+
+script_main() {
+    local _argv=()
+
+    while [ -n "$1" ]; do
+        case "$1" in
+            # --ref) _ref="$2"; shift 2 ;;
+            -h|--help) nef_show_usage; return ;;
+            -*) nef_fatal_usage "invalid option: $1" ;;
+            *) _argv=("${_argv[@]}" "$1"); shift ;;
+        esac
+    done
+
+    [ "${#_argv[@]}" -lt 2 ] && nef_fatal_usage "too few arguments"
+
+    local _devpath="${_argv[0]}"
+    local _basedir="${_argv[1]}"
+    unset _argv[1]
+    unset _argv[0]
+    # echo files: "${_argv[@]}"
+
+    lvs $_devpath >/dev/null \
+        || nef_fatal "device not recognized as a LVM LV: $_devpath"
+
+    local _size=2G
+    local _now=$(date +%Y%m%d-%H%M%S)
+    local _snapshot=$(basename $_devpath)-$_now
+    local _snapshotdev=$(dirname $_devpath)/$_snapshot
+    local _status=0
+
+    nef_log "Creating LVM snapshot: $_snapshotdev"
+    if lvcreate --snapshot $_devpath --permission r -L $_size -n $_snapshot >/dev/null; then
+
+        local _mountpath=/run/nef-snapshot-tar.$_now
+        mkdir -p $_mountpath
+        if mount $_snapshotdev $_mountpath -o ro; then
+            nef_log "Snapshot mounted on: $_mountpath"
+
+            local _localbasedir="$_mountpath/${_basedir##/}"
+            if [ -d "$_localbasedir" ]; then
+                nef_log "Extracting directory locally resolved as: $_localbasedir"
+                cd $_localbasedir
+                if tar c "${_argv[@]}"; then
+                    nef_log "Successfully dumped tar archive."
+                else
+                    local _cmdtstatus=$?
+                    _status=5
+                    nef_fatal -ne "tar command failed with status: $_cmdtstatus"
+                fi
+                cd /
+            else
+                _status=4
+                nef_fatal -ne "Directory does not exist: $_localbasedir"
+            fi
+        else
+            _status=3
+            nef_fatal -ne "failed to mount LVM snapshot: $_snapshotdev"
+        fi
+    else
+        _status=2
+        nef_fatal -ne "failed to create LVM snapshot: $_snapshotdev"
+    fi
+    umount $_mountpath \
+        || nef_fatal "failed to unmount: $_mountpath"
+    lvremove -f $_snapshotdev >/dev/null
+    local _cmdstatus=$?
+    [ $_cmdstatus -eq 0 -o $_cmdstatus -eq 141 ] \
+        || nef_fatal "failed to remove snapshot (status=$_cmdstatus): $_snapshotdev"
+    nef_log "Successfully removed LVM snapshot: $_snapshotdev"
+
+    return $_status
+}
+
+script_command_help() {
+    cat <<EOF
+Usage: $nef_command_name <volume-device> <base-directory> [only-files]
+
+The $nef_command_name command will create a snapshot for <volume-device>
+and extract <base-directory> and dump the tar archive content to standard
+output.
+
+Created by JF Gigand <jf@geonef.fr> on 20160411.
+EOF
+}
+
+script_main "$@"

@@ -1,0 +1,3 @@
+# Installer script for sysconf "sysconf.nef.common"  -*- shell-script -*-
+
+# Nothing to do (sysconf.base's setup.rc executes "sysconf-etc.d update" already)

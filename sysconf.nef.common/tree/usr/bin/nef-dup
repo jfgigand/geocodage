@@ -1,0 +1,399 @@
+#!/bin/bash
+#
+# nef-dup - wrapper around the 'duplicity' backup tool, for profile-based management
+#
+# It provides easy use of 'duplicity' by using static configuration files in /etc/nef-dup.
+#
+# A profile named "toto" is configured through file: /etc/nef-dup/toto.conf
+#
+# Profile options:
+#
+#   NEFDUP_LOCAL_PATH (mandatory)
+#       Absolute path of local directory to backup
+#
+#   NEFDUP_TARGET_URL (mandatory)
+#       Backend URL as expected by duplicity
+#
+#   NEFDUP_PROFILE_DESCR
+#       Description of the profile, for information purpose
+#
+#   NEFDUP_LOG_FILE
+#       Absolute path of log file. Output of duplicity will be saved there.
+#
+#   NEFDUP_DUPLICITY_VERBOSITY (error/warning/notice/info/debug)
+#       Value of --verbosity option passed to duplicty.
+#
+#   NEFDUP_SHOW_PROGRESS (yes/no)
+#       Whether to show real time transfers progress (duplicity --progress)
+#
+#   NEFDUP_OPTIONS_ARRAY
+#       Array of options to pass to duplicity(1)
+#
+#
+# Options configurables in /etc/default/nef-dup:
+#
+#   NEFDUP_PROFILE_DIR [/etc/nef-dup]
+#       Path to directory containing the profile files
+#
+#   NEFDUP_LOG_DIR [/var/log/nef-dup]
+#       Path to directory where log files are created.
+#       Each profile has a separated log file. For example:
+#       messages of profile "toto" are logged to $NEFDUP_LOG_DIR/toto.log
+#
+#       Use logrotate(1) to rotate them.
+#
+#
+# Hard-coded options:
+#
+#   NEFDUP_CONFIG_FILE [/etc/default/nef-dup]
+#       Path to common nef-dup configuration
+#
+##
+# HISTORY
+#   20151009 first version by JF Gigand <jf@geonef.fr>
+##
+
+nef_command_name=nef-dup
+nef_command_prefix=script_command
+
+script_dir=$(dirname $(readlink -f $0))
+PATH=$script_dir:$script_dir/../share/nef-common:$script_dir/../../../../sysconf.base/tree/usr/share/nef-common:/usr/share/nef-common . shell-command || exit 2
+
+######################################################################
+# DEFAULTS AND FUNCTIONS
+
+[ -z "$HOME" ] && export HOME=~
+
+# NEF_LOG_NO_PREFIX=yes
+NEF_LOG_DATE=yes
+NEFDUP_PROFILE_DESCR="(no description)"
+NEFDUP_IS_INCREMENTAL=no
+NEFDUP_DEST_LOG=yes
+NEFDUP_ENABLE_ENCRYPTION=no
+NEFDUP_SHOW_PROGRESS=yes
+NEFDUP_EXCLUDE_OTHER_FILESYSTEMS=yes
+NEFDUP_DUPLICITY_VERBOSITY=notice
+NEFDUP_LOG_FILE=
+
+NEFDUP_LOG_DIR=/var/log/nef-dup
+NEFDUP_PROFILE_DIR=/etc/nef-dup
+
+NEFDUP_CONFIG_FILE=/etc/default/nef-dup
+
+[ -f $NEFDUP_CONFIG_FILE ] && . $NEFDUP_CONFIG_FILE
+
+
+######################################################################
+# COMMANDS
+
+# command: list
+#
+# List available profiles
+##
+script_command_list() {
+    local _argv=()
+
+    while [ -n "$1" ]; do
+        case "$1" in
+            -h|--help) script_command_help list; return ;;
+            -*) script_eval_common_option "$1"; shift ;;
+            *) _argv=("${_argv[@]}" "$1"); shift ;;
+        esac
+    done
+
+    [ "${#_argv[@]}" -eq 0 ] && _argv=('*')
+
+    script_list_profiles "${_argv[@]}"
+}
+
+# command: backup <name>
+#
+#
+#
+# Options can be given at any position:
+#
+#   -d, --dry
+#               Do a dry-run. Useful with -v to dump the duplicity command line
+##
+script_command_backup() {
+    local _dry=no
+    local _dup_options=()
+    local _argv=()
+
+    while [ -n "$1" ]; do
+        case "$1" in
+            -d|--dry) _dry=yes; shift ;;
+            -h|--help) script_command_help backup; return ;;
+            -*) script_eval_common_option "$1"; shift ;;
+            *) _argv=("${_argv[@]}" "$1"); shift ;;
+        esac
+    done
+
+    [ "${#_argv[@]}" -eq 0 ] && nef_fatal_usage_command backup "too few arguments"
+
+    local _profiles=$(script_expand_profiles "${_argv[@]}")
+    for _profile in $_profiles; do
+        script_load_profile "$_profile"
+        nef_log "Backing up directory: $NEFDUP_LOCAL_PATH"
+        nef_log "   ... to target URL: $NEFDUP_TARGET_URL"
+
+        [ $NEFDUP_SHOW_PROGRESS = yes ] && _dup_options=("${_dup_options[@]}" --progress)
+        [ $NEFDUP_ENABLE_ENCRYPTION = yes ] || _dup_options=("${_dup_options[@]}" --no-encryption)
+        [ $NEFDUP_EXCLUDE_OTHER_FILESYSTEMS = yes ] && _dup_options=("${_dup_options[@]}" --exclude-other-filesystems)
+
+        _dup_args=("${_dup_options[@]}" --verbosity "$NEFDUP_DUPLICITY_VERBOSITY" "$NEFDUP_LOCAL_PATH" "$NEFDUP_TARGET_URL")
+
+        if [ $_dry = no ]; then
+            nef_log -v "Running: duplicity ${_dup_args[@]}"
+            duplicity "${_dup_args[@]}" | sed -u 's/^/duplicity: /' | tee -a $NEFDUP_LOG_FILE
+        else
+            nef_log -v "Dry-running: duplicity ${_dup_args[@]}"
+        fi
+    done
+}
+
+# command: help [command]
+#
+# Print information about command usage.
+#
+# With no argument, a list of commands is printed.
+##
+script_command_help() {
+    local _options=
+    local _argv=()
+    local _command=
+
+    while [ -n "$1" ]; do
+        case "$1" in
+            --usage) _options="$_options --usage" shift ;;
+            -h) script_command_help help; return ;;
+            --) shift; _command="$1"; break ;;
+            -*) script_eval_common_option "$1"; shift ;;
+            *) _command="$1"; break ;;
+        esac
+    done
+
+    nef_show_help $_options $_command
+}
+
+
+######################################################################
+# INTERNAL FUNCTIONALITY
+
+script_list_profiles() {
+    local _profiles=$(script_expand_profiles "$@")
+    # nef_log -v "Expanded profiles: ${_profiles}:"
+    nef_log "Matching profiles from ${NEFDUP_PROFILE_DIR}:"
+    for _profile in $_profiles; do
+        # local file=${NEFDUP_PROFILE_DIR}/$_profile.conf
+        # for file in ${NEFDUP_PROFILE_DIR}/*.conf; do
+        (
+            script_load_profile "$_profile"
+            # name=$(basename "$file" .conf)
+            # descr=$( . $file && echo "${NEFDUP_PROFILE_DESCR}")
+            nef_log "  $_profile - ${NEFDUP_PROFILE_DESCR}"
+        )
+    done
+}
+
+script_load_profile() {
+    _profile_name="$1"
+
+    if test "$_profile_name" = "?"; then
+        script_list_profiles
+        exit 0
+    fi
+
+    _profile_file="${NEFDUP_PROFILE_DIR}/${_profile_name}.conf"
+    . $_profile_file || nef_fatal "could not load profile file: $_profile_file"
+
+    [ -n "$NEFDUP_LOCAL_PATH" ] \
+        || nef_fatal "NEFDUP_LOCAL_PATH is not defined in profile file: $_profile_file"
+    [ -n "$NEFDUP_TARGET_URL" ] \
+        || nef_fatal "NEFDUP_TARGET_URL is not defined in profile file: $_profile_file"
+    [ -d "$NEFDUP_LOCAL_PATH" ] \
+        || nef_fatal "NEFDUP_LOCAL_PATH does not exist: $NEFDUP_LOCAL_PATH"
+
+    if [ -z "$NEFDUP_LOG_FILE" ]; then
+        NEFDUP_LOG_FILE="$NEFDUP_LOG_DIR/backup.$_profile_name.log"
+    fi
+    local _dir="$(dirname "$NEFDUP_LOG_FILE")"
+    [ -d "$_dir" ] || mkdir -p "$_dir"
+
+    NEF_LOG_FILE="$NEFDUP_LOG_FILE"
+    # nef_log -v "Loaded profile from: $_profile_file"
+}
+
+# Can receive multiple arguments.
+# Shell pathname expansion is performed on all non-absolute arguments.
+# Absolute arguments
+#
+# See UNITS TESTS at the end of this script file
+script_expand_profiles() {
+    nef_log -v script_expand_profiles
+    while [ $# -gt 0 ]; do
+
+        local _pattern="$1"
+        shift
+
+        if [[ "$_pattern" =~ ^/ ]]; then
+            # Absolute path: do not perform star expansion.
+            # Just find .conf files if it matches a directory
+            if [[ "$_pattern" =~ .conf$ ]]; then
+                local _files="$_pattern"
+            else
+                nef_log -d "Pattern is a directory, we must find *.conf files in it: $_pattern"
+                if [ -d "$_pattern" ]; then
+                    local _files=$(find -L "$_pattern" -name '*.conf')
+                else
+                    nef_log "Warning: no such *.conf file or directory: $_pattern"
+                    continue
+                fi
+            fi
+
+        else
+            # Relative path: perform star and directory expansion
+            local _find_args=()
+            if [[ "$_pattern" =~ /$ ]]; then
+                _find_args=( -path "$NEFDUP_PROFILE_DIR/${_pattern}*" )
+            else
+                _find_args=( -path "$NEFDUP_PROFILE_DIR/$_pattern" -or -path "$NEFDUP_PROFILE_DIR/$_pattern.conf" )
+            fi
+            _find_args=( -L $NEFDUP_PROFILE_DIR -name '*.conf' "${_find_args[@]}" )
+
+            # echo "find ${_find_args[@]}"  >&2
+            nef_log -d "Running: find ${_find_args[@]}"
+            local _files="$(find "${_find_args[@]}" )"
+        fi
+
+        nef_log -d "Pattern '$_pattern' was expanded to: ${_files//
+/ }"
+        if [ -z "$_files" ]; then
+            nef_log "Warning: pattern does not match any profile: $_pattern"
+            continue
+        fi
+        for _file in $_files; do
+            # convert _file to end with either '.conf' or '/'
+            if [ -r "$_file" ]; then
+                nef_log -v "Found matching profile at: $_file"
+                _file="${_file#${NEFDUP_PROFILE_DIR}/}"
+                echo "${_file%.conf}"
+            else
+                nef_log "Warning: could not read profile file: $_file"
+            fi
+        done
+    done
+}
+
+######################################################################
+# COMMAND LINE & RUN
+
+# common options:
+#   -v, --verbose               Enable verbose logging on stderr
+#   -vv, --debug-verbose        Enable debug-level verbosity (implies -v)
+#   -h, --help                  Show help for main usage or specific command
+##
+script_eval_common_option() {
+    case "$1" in
+        -v | --verbose) nef_opt_show_verbose=yes; shift ;;
+        -vv | --debug-verbose) nef_opt_show_verbose=yes; nef_opt_show_debug=yes; shift ;;
+        -h | --help) nef_show_usage; exit 0 ;;
+        -*) nef_fatal "bad option: $1, use -h for usage information" ;;
+    esac
+}
+
+nef_fatal_usage_command() {
+    local _command="$1"; shift
+
+    nef_log "$_command usage error (try: $_command -h): $*"
+    # echo >&2
+    # script_command_help --usage "$_command" >&2
+    exit 1
+}
+
+script_parse_cmdline() {
+    nef_command_merge_env
+    nef_command_init_options
+
+    script_command_argv=()
+
+    while [ -n "$1" ]; do
+
+        case "$1" in
+            -*) script_eval_common_option "$1"; shift ;;
+            *) script_command_argv=("$@"); break ;;
+        esac
+
+    done
+
+    [ -z "${script_command_argv[0]}" ] && script_command_argv=(help)
+
+
+    # Run command
+    script_command_name="${script_command_argv[0]}"
+    unset script_command_argv[0]
+    script_command_function_name="${nef_command_prefix}_${script_command_name}"
+    declare -f $script_command_function_name >/dev/null \
+        || nef_fatal_usage "invalid command: $script_command_name"
+    $script_command_function_name "${script_command_argv[@]}"
+    local _status=$?
+    if [ $_status -eq 0  ]; then
+        nef_log -v "Command returned successfully."
+    else
+        if [ "$script_return_status" != yes ]; then
+            nef_fatal "command ${script_command_name} failed with status $_status"
+        else
+            nef_log -v "command ${script_command_name} returned status $_status"
+        fi
+    fi
+    return $_status
+}
+
+######################################################################
+
+script_parse_cmdline "$@"
+exit
+
+######################################################################
+# UNIT TESTS
+
+## script_expand_profiles():
+# find -L /etc/nef-dup
+/etc/nef-dup
+/etc/nef-dup/home.conf
+/etc/nef-dup/dir
+/etc/nef-dup/dir/sub
+/etc/nef-dup/dir/sub/in.conf
+/etc/nef-dup/dir/toto.conf
+/etc/nef-dup/etc.conf
+
+## Tests:
+# nef-dup list 2>&1 | sed 's/ - .*//'
+# nef-dup list '*' 2>&1 | sed 's/ - .*//' # (same)
+nef-dup: Matching profiles from /etc/nef-dup:
+nef-dup:   home
+nef-dup:   dir/sub/in
+nef-dup:   dir/toto
+nef-dup:   etc
+
+# nef-dup list '*e*' 2>&1 | sed 's/ - .*//'
+nef-dup: Matching profiles from /etc/nef-dup:
+nef-dup:   home
+nef-dup:   etc
+
+# nef-dup list 'dir' 2>&1 | sed 's/ - .*//'
+nef-dup: Warning: pattern does not match any profile: dir
+nef-dup: Matching profiles from /etc/nef-dup:
+
+# nef-dup list 'dir/' 2>&1 | sed 's/ - .*//'
+nef-dup: Matching profiles from /etc/nef-dup:
+nef-dup:   dir/sub/in
+nef-dup:   dir/toto
+
+# nef-dup list 'dir/toto' 2>&1 | sed 's/ - .*//'
+nef-dup: Matching profiles from /etc/nef-dup:
+nef-dup:   dir/toto
+
+# nef-dup list 'dir/tot*' 2>&1 | sed 's/ - .*//'
+nef-dup: Matching profiles from /etc/nef-dup:
+nef-dup:   dir/toto

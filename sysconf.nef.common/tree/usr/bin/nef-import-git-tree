@@ -1,0 +1,72 @@
+#!/bin/bash
+#
+# Utility to "migrate" a subtree from a target repos to the local one
+#
+# It does a "git subtree split" followed by a "git subtree pull"
+#
+
+nef_command_name=nef-import-git-tree
+. $(dirname $0)/../share/nef-common/shell-command || exit 2
+
+nef_command_usage() {
+    cat <<EOF
+usage: $nef_command_name <repository-path> <commit-ref> <subtree-prefix>
+
+$nef_command_name imports the subtree of the target repository into the local one.
+
+To do that it performs a 'git subtree split' on the the target <repository-path>
+followed by a 'git subtree pull' of the resulting commit into the current repository.
+
+See git-subree(1) or read the source code of $0 for more information.
+EOF
+}
+
+_argv=()
+
+while [ -n "$1" ]; do
+    case "$1" in
+        -h|--help) nef_command_usage; exit 0 ;;
+        -*) nef_fatal_usage "unknown option: $1"; shift ;;
+        *) _argv=("${_argv[@]}" "$1"); shift ;;
+    esac
+done
+
+[ "${#_argv[@]}" -lt 3 ] && nef_fatal_usage "too few arguments"
+
+remote_repository_path="${_argv[0]}"
+remote_repository_commit="${_argv[1]}"
+subtree_prefix="${_argv[2]}"
+
+git_dir=$(git rev-parse --git-dir)
+[ -z "$git_dir" ] && nef_fatal "must be run in a GIT repository"
+
+local_wd="$PWD"
+cd "$remote_repository_path" || nef_fatal "could not chdir to: $remote_repository_path"
+
+commit=$(git subtree split -P "$subtree_prefix" "$remote_repository_commit")
+[ $? -ne 0 ] && nef_fatal "git-subtree failed"
+
+tmp_branch=tmp_$(date +%s.%N)
+nef_log "$remote_repository_path: splitted prefix '$subtree_prefix' of '$remote_repository_commit' into commit: $commit; saving into temp branch: $tmp_branch"
+echo git update-ref -m "by $nef_command_name" refs/heads/$tmp_branch $commit
+git update-ref -m "by $nef_command_name" refs/heads/$tmp_branch $commit
+
+cd "$local_wd"
+op=pull
+
+if [ ! -d "$subtree_prefix" ]; then
+    nef_log "'$subtree_prefix' does not exist, doing a 'subtree add'..."
+    op=add
+fi
+
+echo cmd: git subtree $op -P "$subtree_prefix" "$remote_repository_path" $tmp_branch
+git subtree $op -P "$subtree_prefix" "$remote_repository_path" $tmp_branch
+status=$?
+
+nef_log "Removing temp branch '$tmp_branch' from repository: $remote_repository_path"
+cd "$remote_repository_path"
+git update-ref -d refs/heads/$tmp_branch
+
+[ "$status" -eq 0 ] || nef_fatal "git subtree pull failed with status $?"
+
+nef_log "Successfully merged prefix: $subtree_prefix"

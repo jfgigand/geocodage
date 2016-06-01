@@ -1,0 +1,66 @@
+#!/bin/bash
+#
+# nef-archive - wrapper for the 'tar' archive tool to automatize frequent patterns
+#
+##
+# HISTORY
+#   20151009 first version by JF Gigand <jf@geonef.fr>
+##
+
+nef_command_name=nef-archive
+
+script_dir=$(dirname $(readlink -f $0))
+PATH=$script_dir:$script_dir/../share/nef-common:$script_dir/../../../../sysconf.base/tree/usr/share/nef-common:/usr/share/nef-common . shell-command || exit 2
+
+######################################################################
+# DEFAULTS AND FUNCTIONS
+
+[ -z "$HOME" ] && export HOME=~
+
+NEF_LOG_NO_PREFIX=yes
+
+script_parse_cmdline() {
+    nef_command_merge_env
+    nef_command_init_options
+    local _delete=no
+
+    script_command_argv=()
+
+    while [ -n "$1" ]; do
+
+        case "$1" in
+            -d|--delete) _delete=yes ; shift ;;
+            -h) nef_show_help; return ;;
+            -*) nef_fatal "bad option: $1, use -h for usage information" ;;
+            *) script_command_argv=("$@"); break ;;
+        esac
+
+    done
+
+    [ "${#script_command_argv[@]}" -eq 0 ] && nef_fatal_usage "too few arguments"
+
+    for dir in "${script_command_argv[@]}"; do
+        local _dir=$(basename "$dir")
+        [ -d "$_dir" ] || nef_fatal "No such directory: $_dir"
+    done
+
+    i=0
+
+    for dir in "${script_command_argv[@]}"; do
+        local _dir=$(basename "$dir")
+        archive="$_dir.tar.bz2"
+        nef_log "Archiving '$_dir' into: $archive"
+        tar cjvf "$archive" "$_dir" || nef_fatal "tar(1) failed with status $?"
+        touch -r "$_dir" "$archive"
+        if [ $_delete = yes ]; then
+            nef_log "Removing recursively: $_dir"
+            rm -rf "$_dir"
+        fi
+        let i++
+        nef_log "Archived $i dirs out of ${#script_command_argv[@]}"
+    done
+}
+
+######################################################################
+
+script_parse_cmdline "$@"
