@@ -7,7 +7,7 @@
 # (and avoid Apache's "apr_sockaddr_info_get() failed" error)
 hostname=$(hostname)
 ip=$(ip -o -4 addr show dev eth0 primary  | sed -r 's/.* inet ([0-9.]+).*/\1/')
-grep -q "^$hostname " /etc/hosts \
+grep -qE "\s${hostname}($|\s)" /etc/hosts \
     || echo "$ip $hostname" >>/etc/hosts
 
 # because the sources.list installed by lxc download template doesn't work well

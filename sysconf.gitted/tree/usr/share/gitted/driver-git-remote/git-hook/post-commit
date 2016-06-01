@@ -1,0 +1,45 @@
+#!/bin/bash
+#
+# Hook executed at the end of a git commit.
+#
+# This is provided by the gitted driver-git-remote as a symbolic link
+# placed in REPO/.git/hook
+
+# called_as=$(readlink -f $0)
+# echo "\$0=$0 called_as=$called_as args=$@ PWD=$PWD"
+
+driver_rewrite() {
+    local _from="${1//\//\\/}"
+    local _to="${2//\//\\/}"
+    sed -r "s/^${_from/\*/(.*)}$/${_to/\*/\\1}/"
+}
+
+
+workingdir="$PWD"
+
+commit=$(git rev-parse HEAD)
+
+if git cat-file -p $commit | grep -q "^Gitted .* auto-commit "; then
+    echo "$0: Not triggering gitted-commit, commit is an auto-commit already."
+else
+    head_branch=$(git symbolic-ref HEAD)
+    # driver_rewrite
+    echo Going...
+    for driver_branch in $(gitted list --only-driver git-remote | sed -r 's/^[^:]+://'); do
+        (
+            eval "$(gitted show $driver_branch 2>/dev/null)"
+            if [ "$workingdir" = "$GITTED_CONFIG_GIT_REMOTE_URL" ]; then
+                if [ true = "$GITTED_CONFIG_GIT_REMOTE_AUTOGITTEDCOMMIT" ]; then
+                    nested_branch=$(echo "$head_branch" | driver_rewrite \
+                                                  "$GITTED_CONFIG_GIT_REMOTE_REMOTEREFS" \
+                                                  "$GITTED_CONFIG_GIT_REMOTE_LOCALREFS")
+
+                    echo "Auto-comitting gitted branch: $driver_branch/$nested_branch"
+                    gitted commit $driver_branch/$nested_branch
+                else
+                    echo "Auto-commit is not enabled on driver branch: $driver_branch"
+                fi
+            fi
+        )
+    done
+fi

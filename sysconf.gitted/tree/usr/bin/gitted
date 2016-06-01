@@ -42,6 +42,7 @@ export GITTED_NULL_SHA1=0000000000000000000000000000000000000000
 
 NEF_LOG_NO_PREFIX=yes
 
+
 ######################################################################
 # COMMANDS: WORK STATE
 
@@ -468,7 +469,7 @@ script_command_reset() {
                 case $_status in
 
                     0) # success
-                        ;;
+                    ;;
                     # 2)
                     #     nef_log "WARN: driver had nothing to reset"
                     #     _ok=no
@@ -484,7 +485,7 @@ script_command_reset() {
             if [ $_ok = yes ]; then
                 local _state=
                 if [ $_state_only = yes ]; then
-                    _state="STATE ONLY "
+                    _state="STATE "
                 elif [ $_commit != $GITTED_CONFIG_STATE_COMMIT ]; then
                     git update-ref ${GITTED_REF_PREFIX}$_state_branch "$_commit"
                 fi
@@ -512,14 +513,14 @@ script_command_reset() {
 
     return 0
 
-        # test -n ""
-        # nef_log "$i branch(es) were reset successfully."
-        # nef_log " src: $GIT_DIR/$_tmp_ref/*"
-        # nef_log "dest: $GIT_DIR/$GITTED_REF_PREFIX"
-        # cp -r $GIT_DIR/$_tmp_ref/* $GIT_DIR/$GITTED_REF_PREFIX \
-        #     || nef_fatal "failed to copy the refs from: $GIT_DIR/$_tmp_ref/*"
-        # rm -rf $GIT_DIR/$_tmp_ref
-        # nef_log "Done."
+    # test -n ""
+    # nef_log "$i branch(es) were reset successfully."
+    # nef_log " src: $GIT_DIR/$_tmp_ref/*"
+    # nef_log "dest: $GIT_DIR/$GITTED_REF_PREFIX"
+    # cp -r $GIT_DIR/$_tmp_ref/* $GIT_DIR/$GITTED_REF_PREFIX \
+    #     || nef_fatal "failed to copy the refs from: $GIT_DIR/$_tmp_ref/*"
+    # rm -rf $GIT_DIR/$_tmp_ref
+    # nef_log "Done."
 }
 
 ######################################################################
@@ -583,12 +584,102 @@ Run "$0 init" to fix/upgrade it: no data will be lost, it just fix hooks and ref
 
 For more information, run "$0 help" or check out http://gitted.net/.
 EOF
-nef_log "Fixing hooks"
-for hook in pre-receive update; do
-    echo -e '#!/bin/sh\nexec gitted git-hook-'$hook' -- "$@"' \
-        >$GIT_DIR/hooks/$hook
-    chmod 755 $GIT_DIR/hooks/$hook
-done
+    nef_log "Fixing hooks"
+    for hook in pre-receive update; do
+        echo -e '#!/bin/sh\nexec gitted git-hook-'$hook' -- "$@"' \
+             >$GIT_DIR/hooks/$hook
+        chmod 755 $GIT_DIR/hooks/$hook
+    done
+}
+
+
+# command: list
+#
+# List all driver branches
+#
+# Options can be given at any position:
+#
+#   --only-driver <driver-name>
+#               Only show branches matching driver <driver-name>.
+#               Example: --only-driver git-remote
+##
+script_command_list() {
+    local _only_driver=
+    local _argv=()
+
+    while [ -n "$1" ]; do
+        case "$1" in
+            --only-driver) _only_driver="$2"; shift 2 ;;
+            -h|--help) script_command_help list; return ;;
+            -*) script_eval_common_option "$1"; shift ;;
+            *) _argv=("${_argv[@]}" "$1"); shift ;;
+        esac
+    done
+
+    [ "${#_argv[@]}" -gt 0 ] && nef_fatal_usage_command list "too many arguments"
+
+
+    _configs=$(find $GITTED_STATE_CONFIG_DIR/$_base -name '*.config' -printf "%P\n")
+    for _config in $_configs; do
+        # nef_log "driver domain under: ${_base}${_config%.config}"
+        _driver_branches="${_base}${_config%.config}"
+    done
+
+    for _branch in $_driver_branches; do
+        # nef_log "Expanding: $1: calling driver: $_branch"
+        (
+            script_load_state_config $_branch
+            local _status=$?
+            if [ $_status = 2 ]; then
+                nef_log -v "State is NOT ENABLED (from config), ignoring: $_branch"
+            else
+                if [ $_status -ne 0 ]; then
+                    nef_fatal --warn "could not load driver for branch, ignoring it: $_branch"
+                else
+                    if [ -z "$_only_driver" -o ${GITTED_CONFIG_STATE_DRIVER} = "$_only_driver" ]; then
+                        echo ${GITTED_CONFIG_STATE_DRIVER}:$_branch
+                    fi
+                    # env | grep ^GITTED_CONFIG_
+                fi
+            fi
+        )
+    done
+}
+
+# command: show <driver-branch>
+#
+# Show the config for a given driver branches
+#
+##
+script_command_show() {
+    local _argv=()
+
+    while [ -n "$1" ]; do
+        case "$1" in
+            -h|--help) script_command_help show; return ;;
+            -*) script_eval_common_option "$1"; shift ;;
+            *) _argv=("${_argv[@]}" "$1"); shift ;;
+        esac
+    done
+
+    [ "${#_argv[@]}" -lt 1 ] && nef_fatal_usage_command show "too few arguments"
+    [ "${#_argv[@]}" -gt 1 ] && nef_fatal_usage_command show "too many arguments"
+
+
+    _branch="${_argv[0]}"
+
+    script_load_state_config $_branch
+    local _status=$?
+    if [ $_status = 2 ]; then
+        nef_log -v "State is NOT ENABLED (from config), ignoring: $_branch"
+    else
+        if [ $_status -ne 0 ]; then
+            nef_fatal --warn "could not load driver for branch, ignoring it: $_branch"
+        else
+            nef_log "Environment:"
+            env | grep ^GITTED_CONFIG_
+        fi
+    fi
 }
 
 
@@ -666,7 +757,7 @@ script_command_git-hook-pre-receive() {
 
     while [ -n "$1" ]; do
         case "$1" in
-            -h|--help) script_command_help git-receive-pack; return ;;
+            -h|--help) script_command_help git-hook-pre-receive; return ;;
             --) shift; _argv=("${_argv[@]}" "$@"); shift $# ;;
             -*) script_eval_common_option "$1"; shift ;;
             *) _argv=("${_argv[@]}" "$1"); shift ;;
@@ -692,19 +783,69 @@ script_command_git-hook-update() {
 
     while [ -n "$1" ]; do
         case "$1" in
-            -h|--help) script_command_help git-receive-pack; return ;;
+            -h|--help) script_command_help git-hook-update; return ;;
             --) shift; _argv=("${_argv[@]}" "$@"); shift $# ;;
             -*) script_eval_common_option "$1"; shift ;;
             *) _argv=("${_argv[@]}" "$1"); shift ;;
         esac
     done
 
-    [ "${#_argv[@]}" -lt 3 ] && nef_fatal_usage_command git-receive-pack "too few arguments"
-    [ "${#_argv[@]}" -gt 3 ] && nef_fatal_usage_command git-receive-pack "too many arguments"
+    [ "${#_argv[@]}" -lt 3 ] && nef_fatal_usage_command git-hook-update "too few arguments"
+    [ "${#_argv[@]}" -gt 3 ] && nef_fatal_usage_command git-hook-update "too many arguments"
 
     local _branch=${_argv[0]#refs/heads/}
     nef_log "gitted: hook-update (branch=$_branch) on ref: ${_argv[0]}: ${_argv[1]:0:7} -> ${_argv[2]:0:7}"
     script_command_reset --state-only --keep $_branch --to ${_argv[2]}
+}
+
+# command: smtp-receive
+#
+# Receive a mail, parse branch name out of recipient and forwards message to driver
+#
+# This command is meant to be called by the MTA, specified in /etc/aliases.
+##
+script_command_smtp-receive() {
+    local _argv=()
+
+    while [ -n "$1" ]; do
+        case "$1" in
+            -h|--help) script_command_help smtp-receive; return ;;
+            --) shift; _argv=("${_argv[@]}" "$@"); shift $# ;;
+            -*) script_eval_common_option "$1"; shift ;;
+            *) _argv=("${_argv[@]}" "$1"); shift ;;
+        esac
+    done
+
+    [ "${#_argv[@]}" -gt 0 ] && nef_fatal_usage_command git-receive-pack "too many arguments"
+
+    mydate=$(date +%Y-%m-%d-%H%M%S)
+    env >/tmp/smtp-env.$mydate
+    rm -f /tmp/smtp-msg
+    local _msgfile=$(tempfile)
+    cat >$_msgfile
+    local _in_body=no
+    mu view $_msgfile | \
+        while read line; do
+            if [ no = $_in_body ]; then
+                if ! [[ "$line" =~ : ]]; then
+                    _in_body=yes
+                fi
+            fi
+            if [ yes = $_in_body ]; then
+                echo "LINE: $line" >>/tmp/smtp-msg.$mydate
+                true
+            else
+                echo "HEADER: $line" >>/tmp/smtp-msg.$mydate
+                local _header=$(echo "$line" | sed 's/:.*//')
+                case "$_header" in
+                    Subject)
+                    ;;
+                esac
+            fi
+        done
+    nef_log "got it!"
+    # local _branch=${_argv[0]#refs/heads/}
+    # nef_log "gitted: hook-update (branch=$_branch) on ref: ${_argv[0]}: ${_argv[1]:0:7} -> ${_argv[2]:0:7}"
 }
 
 ######################################################################

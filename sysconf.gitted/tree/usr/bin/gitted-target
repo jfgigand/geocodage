@@ -1,17 +1,17 @@
 #!/bin/bash
 #
-# gitted-target: manage a target Gitted through sysconf-target -- http://gitted.net
+# gitted-target: manage a target Gitted through sysconf-target -- http://gitted.io
 #
 # Gitted is a shell framework that turn a UNIX system into a Git repository
 # where the machine state is seen as a "Git work data" which can be
-# checked out/commited from/to Git branches (the "IO" branches).
+# checked out/commited from/to Git branches (the "state" branches).
 #
-# This command is the client that talks to the gitted server command
+# This command is the client who talks to the gitted server command
 # through sysconf-target. The client provides 3 functionalities:
 #
 #   - send Gitted commands to a target system (commit, reset, status)
 #   - forward Git push/pull to target (using the Git ext:: remote protocol)
-#   - integrate both for easy use from the "git" command (register)
+#   - integrate both for easy use from the "git" command (init, register)
 #
 # Add -h or --help to any command for detailed information. Run command
 # 'help <target> <command> -h' to get full usage from given target's Gitted.
@@ -170,7 +170,7 @@ script_command_init() {
     "$sysconf_target_script" init $_target "${_target_init_opts[@]}" \
         || _fail "sysconf-target init $_target"
 
-        script_add_target_remote "$_target"
+    script_add_target_remote "$_target"
 }
 
 # command: register [what] [git-config-scope] [<target>]
@@ -265,7 +265,7 @@ script_command_register() {
     elif [ -z "$_script_dir" ]; then
         case $_config in
             local) _script_dir=$(git rev-parse --git-dir)
-                [ -d $_script_dir ] || nef_fatal "not in a Git repository
+                   [ -d $_script_dir ] || nef_fatal "not in a Git repository
 
 HINT: change to a Git directory or use --system, --global, --file or --no-copy" ;;
 
@@ -324,7 +324,100 @@ HINT: give --force to overwrite, specify --file or run the right $nef_command_na
         _git_config_cmd "url.ext::${_dir_spec}/gitted-target %S .insteadOf" "${_url_scheme}:"
     fi
 
-    [ -n "$_target" ] && script_add_target_remote "$_target"
+    if [ -n "$_target" ]; then
+        script_add_target_remote "$_target"
+    fi
+}
+
+# command: sync <remote>
+#
+# Synchronise all
+#
+# - gitted commit <target> '**'         (<target> is got from 'git config --get remote.<remote>.url')
+# - git fetch <remote>
+# - foreach <branch> in <fetched branches>:
+#     - git checkout <branch>
+#     - git merge <remote>/<branch>
+#     - git nef-subtree split <branch>
+#
+# - git nef-subtree fetch
+# - git nef-subtree merge
+# - git push <remote> <fetched branches>
+#
+# TODO usage: sync [<branch> ...]
+#
+# Options:
+#
+#   --no-fetch          Skip "gitted commit" and git-fetch from target
+#   --no-push           Skip git-push to target
+#   --no-subtree        Skip processing subtrees
+#
+script_command_sync() {
+    local _no_fetch=no
+    local _no_push=no
+    local _no_subtree=no
+    local _argv=()
+
+    while [ -n "$1" ]; do
+        case "$1" in
+            --no-fetch) _no_fetch=yes; shift ;;
+            --no-push) _no_push=yes; shift ;;
+            --no-subtree) _no_subtree=yes; shift ;;
+            -h|--help) script_command_help sync; return ;;
+            -*) script_eval_common_option "$1"; shift ;;
+            *) _argv=("${_argv[@]}" "$1"); shift ;;
+        esac
+    done
+
+    [ "${#_argv[@]}" -lt 1 ] && nef_fatal_usage_command sync "too few arguments"
+    [ "${#_argv[@]}" -gt 1 ] && nef_fatal_usage_command sync "too many arguments"
+
+
+    local _remote="${_argv[0]}"
+    local _target=$(script_git_remote_to_gitted_target "$_remote")
+    nef_log "Working on remote \"$_remote\", target \"$_target\""
+    [ -n "$_target" ] || nef_fatal "remote \"$_remote\" is missing or is not a gitted remote"
+
+    if [ no = $_no_fetch ]; then
+        (script_command_commit "$_target" '**') \
+            || nef_fatal "gitted-commit failed with status $?"
+        nef_log "Fetching all branches from remote: $_remote"
+        git fetch -v "$_remote" \
+            || nef_fatal "git-fetch failed with status $?"
+    fi
+    local remote_prefix=refs/remotes/$_remote
+    local branches=$(git show-ref \
+                            | grep " $remote_prefix/" \
+                            | sed -r "s,[0-9a-z]+ $remote_prefix/(.*)$,\1,")
+
+    nef_log -v "Branches: $branches"
+    for branch in $branches; do
+        nef_log "** branch: $branch"
+        git checkout --quiet $branch
+        git merge $remote_prefix/$branch \
+            || nef_fatal "merge conflict :("
+        if [ no = $_no_subtree ]; then
+            git nef-subtree split $branch \
+                || nef_fatal "subtree-split failed with status $?"
+        fi
+    done
+
+    if [ no = $_no_subtree ]; then
+        git nef-subtree fetch \
+            || nef_fatal "subtree-fetch failed with status $?"
+        git nef-subtree merge \
+            || nef_fatal "subtree-merge failed with status $?"
+        git nef-subtree join \
+            || nef_fatal "subtree-join failed with status $?"
+        git nef-subtree push \
+            || nef_fatal "subtree-push failed with status $?"
+    fi
+
+    if [ no = $_no_push ]; then
+        nef_log "Push all branches to remote: $_remote"
+        git push -v "$_remote" $branches \
+            || nef_fatal "git-fetch failed with status $?"
+    fi
 }
 
 # command: git-upload-pack <target>
@@ -464,9 +557,16 @@ EOF
 # FUNCTIONALITY
 
 script_is_target_id() {
-    [[ "$1" =~ : ]]
+    # TODO: work with Git remote name (expand remote name to target name)
+    [[ "$1" =~ : ]] #&& return 0
+    # git remote | grep -q "^$1$"
 }
 
+script_git_remote_to_gitted_target() {
+    git config --get "remote.$1.url" \
+        | sed -r 's,^ext::[^ ]+/gitted-target +%S +,,' \
+        | sed -r 's,^gitted:,,'
+}
 # Register target as a Git remote and make a git-fetch(1) on it
 script_add_target_remote() {
     local _target="$1"
@@ -511,9 +611,27 @@ script_server_command() {
         _target=$(git config remote.${_remote}.url)
         if [ -z "$_target" ]; then
             (nef_fatal_usage_command "$_command"  \
-                "Please specify the gitted target, as current branch has no upstream: $(git symbolic-ref -q HEAD)")
-            echo >&2
-            error_on_missing_default_upstream ted "run 'gitted $_command'" "on" >&2
+                                     "Please specify the gitted target, as current branch has no upstream: $(git symbolic-ref -q HEAD)")
+            # echo >&2
+
+            (error_on_missing_default_upstream ted "run 'gitted $_command'" "on" >&2)
+
+            # echo gggg >&2
+	    branch_name=$(git symbolic-ref -q HEAD)
+	    # If there's only one remote, use that in the suggestion
+	    remote="<remote>"
+	    if test $(git remote | wc -l) = 1
+	    then
+		remote=$(git remote)
+	    fi
+
+            echo "
+
+In most case the local and remote branches are named the same,
+so you probably want to do:
+
+    git branch --set-upstream-to=$remote/${branch_name#refs/heads/} ${branch_name#refs/heads/}" >&2
+            exit 1
         fi
         _target="${_target#gitted:}"
         nef_log "using target: $_target"

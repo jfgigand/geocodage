@@ -30,6 +30,7 @@ driver_url="${GITTED_CONFIG_GIT_REMOTE_URL}"
 driver_remoterefs="${GITTED_CONFIG_GIT_REMOTE_REMOTEREFS:-refs/*}"
 driver_localrefs="${GITTED_CONFIG_GIT_REMOTE_LOCALREFS:-*}"
 driver_pretty="--pretty=format:[%h] %ar, by %cn -- %s"
+driver_auto_hook="${GITTED_CONFIG_GIT_REMOTE_REMOTEREFS:-refs/*}"
 
 ################################################################################
 # Driver / shell-driver interface
@@ -38,11 +39,11 @@ gitted_driver_list() {
     git ls-remote "$driver_url" "$driver_remoterefs" \
         | while read _uuid _ref; do
 
-        # echo REF: $_ref >&2
-        local _rewritten=$(echo $_ref | driver_rewrite "$driver_remoterefs" "$driver_localrefs")
-        echo $_rewritten
-        # echo REW: $_rewritten >&2
-    done
+              # echo REF: $_ref >&2
+              local _rewritten=$(echo $_ref | driver_rewrite "$driver_remoterefs" "$driver_localrefs")
+              echo $_rewritten
+              # echo REW: $_rewritten >&2
+          done
 }
 
 gitted_driver_status_code() {
@@ -57,7 +58,7 @@ gitted_driver_status_code() {
     done
 
     driver_remote_branch=$(echo $GITTED_CONFIG_STATE_BRANCH \
-        | driver_rewrite "$driver_localrefs" "$driver_remoterefs")
+                                  | driver_rewrite "$driver_localrefs" "$driver_remoterefs")
     # nef_log -v "Checking remote URL '$driver_url' for ref: $driver_remote_branch"
     local _out=($(git ls-remote "$driver_url" $driver_remote_branch))
 
@@ -75,7 +76,7 @@ gitted_driver_status_code() {
     [ $GITTED_CONFIG_STATE_COMMIT = $GITTED_NULL_SHA1 ] && return 6      # 6=addition
 
     if [ $driver_remote_commit = $GITTED_CONFIG_STATE_COMMIT \
-        -o $_always_check_remote = yes ]; then
+                               -o $_always_check_remote = yes ]; then
 
         gitted_driver_check_remote
         if [ "$remote_head" = $driver_remote_branch ]; then
@@ -391,6 +392,16 @@ driver_git_log1() {
     # git log -1 --pretty=oneline $driver_remote_commit 2>/dev/null
 }
 
+driver_fix_local_repo() {
+    if [ true = "$GITTED_CONFIG_GIT_REMOTE_AUTOGITTEDCOMMIT" ]; then
+        postcommit_hook_path=$driver_url/.git/hooks/post-commit
+        if [ ! -h $postcommit_hook_path ]; then
+            nef_log "Creating missing symlink: $postcommit_hook_path"
+            ln -s /usr/share/gitted/driver-git-remote/git-hook/post-commit $postcommit_hook_path
+        fi
+    fi
+}
+
 gitted_driver_push_to_remote() {
     local _force=false
     while [ -n "$1" ]; do
@@ -429,12 +440,15 @@ gitted_driver_push_to_remote() {
             remote_local_git checkout --quiet ${driver_remote_branch#refs/heads/}
             exit 1
         fi
+
+        driver_fix_local_repo
     fi
 }
 gitted_driver_check_remote() {
     local _str="Remote is"
     remote_is_local=false
     remote_is_bare=true
+    remote_head=
 
     if [[ "$driver_url" =~ ^/ ]] && [ -d "$driver_url" ]; then
         remote_is_local=false
