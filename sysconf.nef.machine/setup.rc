@@ -1,0 +1,12 @@
+# Installer script for sysconf profile: sysconf.nef.machine       -*- shell-script -*-
+
+_packages=""
+_packages="$_packages openssh-server nano"
+_packages="$_packages rsyslog"
+_packages="$_packages collectd"
+
+sysconf_require_packages "$_packages"
+
+if [ -f /root/.bashrc ]; then
+    mv /root/.bashrc{,.orig}
+fi
