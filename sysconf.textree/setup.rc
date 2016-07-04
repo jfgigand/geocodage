@@ -9,7 +9,8 @@ _packages=
 # Textree
 # Install NodeJS and fix bon/node -> nodejs
 # python and build-essential are required to build the nodegit module
-_packages="$_packages ca-certificates nodejs python build-essential memcached"
+_packages="$_packages ca-certificates python build-essential memcached"
+
 
 if [ "$SYSCONF_TEXTREE_ENABLE_NGINX" != no ]; then
     # NginX
@@ -18,6 +19,12 @@ if [ "$SYSCONF_TEXTREE_ENABLE_NGINX" != no ]; then
 fi
 
 sysconf_require_packages $_packages
+
+if ! [ -x /usr/bin/nodejs ]; then
+    sh nodejs.install.sh \
+        || nef_fatal "could not install npm"
+    sysconf_require_packages nodejs
+fi
 
 [ -x /usr/bin/node ] \
     || ln -s nodejs /usr/bin/node
@@ -30,13 +37,23 @@ if [ ! -x /usr/bin/npm ]; then
     nef_log "Installing NPM..."
     sh npmjs.install.sh \
         || nef_fatal "could not install npm"
+    # npm -g install npm@latest
 fi
+
+# npm config set proxy $http_proxy
+# npm config set https-proxy $shttp_proxy
+# npm config set strict-ssl=false
 
 ###
 # START doing things in share/textree
 
+cd /tmp
+git clone https://github.com/request/tunnel-agent.git
+
 _actual_pwd=$PWD
 cd tree/usr/share/textree
+
+cp tunnel-agent/index.js ./node_modules/request/tunnel.js
 
 # 'forever' come from NPM and provide NodeJS process management
 if ! npm list forever -g >/dev/null; then
@@ -45,9 +62,9 @@ if ! npm list forever -g >/dev/null; then
     npm install --unsafe-perm \
         || nef_fatal "could not install npm modules for textree"
     _nodegit_so=$_actual_pwd/resource/nodegit.node
-    nef_log "Fixing module nodegit with pre-built: $_nodegit_so"
-    cp $_nodegit_so node_modules/nodegit/build/Release/nodegit.node \
-        || nef_fatal "copy failed"
+    # nef_log "Fixing module nodegit with pre-built: $_nodegit_so"
+    # cp $_nodegit_so node_modules/nodegit/build/Release/nodegit.node \
+    #     || nef_fatal "copy failed"
 fi
 
 ## These commented lines were for building the binary node-git library.
