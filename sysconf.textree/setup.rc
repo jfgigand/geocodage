@@ -6,10 +6,11 @@
 
 _packages=
 
-# Textree
-# Install NodeJS and fix bon/node -> nodejs
-# python and build-essential are required to build the nodegit module
-_packages="$_packages ca-certificates python build-essential memcached"
+# Runtime deps:
+_packages="$_packages ca-certificates memcached"
+
+# Install-time deps:
+_packages="$_packages build-essential python libssl-dev"
 
 
 if [ "$SYSCONF_TEXTREE_ENABLE_NGINX" != no ]; then
@@ -40,26 +41,25 @@ if [ ! -x /usr/bin/npm ]; then
     # npm -g install npm@latest
 fi
 
-# npm config set proxy $http_proxy
-# npm config set https-proxy $shttp_proxy
-# npm config set strict-ssl=false
+npm config set proxy $http_proxy
+npm config set https-proxy $shttp_proxy
+npm config set strict-ssl=false
 
 ###
 # START doing things in share/textree
 
+_actual_pwd=$PWD
 cd /tmp
 git clone https://github.com/request/tunnel-agent.git
-
-_actual_pwd=$PWD
-cd tree/usr/share/textree
-
-cp tunnel-agent/index.js ./node_modules/request/tunnel.js
+cp tunnel-agent/index.js $_actual_pwd/tree/usr/share/textree/node_modules/request/tunnel.js
+cd $_actual_pwd/tree/usr/share/textree
 
 # 'forever' come from NPM and provide NodeJS process management
 if ! npm list forever -g >/dev/null; then
     nef_log "Installing NPM modules..."
     npm install forever -g
-    npm install --unsafe-perm \
+    # BUILD_ONLY=true npm install --unsafe-perm \
+    BUILD_ONLY=true npm install \
         || nef_fatal "could not install npm modules for textree"
     _nodegit_so=$_actual_pwd/resource/nodegit.node
     # nef_log "Fixing module nodegit with pre-built: $_nodegit_so"
@@ -94,6 +94,7 @@ cd $_actual_pwd
 
 # Setting branch "textree" by default as head content for the textree server
 if ! [ -r /var/lib/textree/HEAD ]; then
+    mkdir -p /var/lib/textree
     echo textree >/var/lib/textree/HEAD
 fi
 
