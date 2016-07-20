@@ -31,6 +31,6 @@ l’un des sujets ouverts, ou en ouvrant un nouveau sujet.
 ## Auteur
 
 Le référentiel national de géocodage et un projet de l’Institut
-National de l'Information Géographique et Forestière (IGN).
+National de l'Information Géographique et Forestière (IGN, France).
 
 Il est développé par Jean-François Gigand.
