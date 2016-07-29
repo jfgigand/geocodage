@@ -73,15 +73,16 @@ gitted_driver_reset() {
 
         if service textree status >/dev/null; then
             service textree reload \
-                || nef_fatal "could not reload textree after HEAD update"
+                || nef_log "WARNING: could not reload textree after HEAD update"
         else
             service textree start \
-                || nef_fatal "could not start textree after HEAD update"
+                || nef_log "WARNING: could not start textree after HEAD update"
         fi
     fi
 
     nef_log "Flushing memcached..."
     echo flush_all >/dev/tcp/127.0.0.1/11211
+    true
 
 }
 

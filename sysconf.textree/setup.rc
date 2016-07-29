@@ -10,13 +10,18 @@ _packages=
 _packages="$_packages ca-certificates memcached"
 
 # Install-time deps:
-_packages="$_packages build-essential python libssl-dev"
-
+_packages="$_packages build-essential python"
 
 if [ "$SYSCONF_TEXTREE_ENABLE_NGINX" != no ]; then
     # NginX
     _packages="$_packages nginx"
     _packages="$_packages bind9-host dnsutils"
+fi
+
+if ! [ -r /etc/apt/sources.list.d/ubuntu-toolchain-r-test-trusty.list ]; then
+    add-apt-repository ppa:ubuntu-toolchain-r/test
+    apt-get update
+    apt-get install libstdc++-4.9-dev
 fi
 
 sysconf_require_packages $_packages
@@ -41,9 +46,9 @@ if [ ! -x /usr/bin/npm ]; then
     # npm -g install npm@latest
 fi
 
-npm config set proxy $http_proxy
-npm config set https-proxy $shttp_proxy
-npm config set strict-ssl=false
+# npm config set proxy $http_proxy
+# npm config set https-proxy $shttp_proxy
+# npm config set strict-ssl=false
 
 ###
 # START doing things in share/textree
@@ -59,7 +64,7 @@ if ! npm list forever -g >/dev/null; then
     nef_log "Installing NPM modules..."
     npm install forever -g
     # BUILD_ONLY=true npm install --unsafe-perm \
-    BUILD_ONLY=true npm install \
+    npm install \
         || nef_fatal "could not install npm modules for textree"
     _nodegit_so=$_actual_pwd/resource/nodegit.node
     # nef_log "Fixing module nodegit with pre-built: $_nodegit_so"
