@@ -1,0 +1,155 @@
+//- :: toc
+//-   :: page
+//-     :process page.children
+//-   :: h1
+//-   :: div
+//-     :process div.children
+//-   :: section
+//-     :: p
+//-     :: ul
+//-     :: ol
+//-     :: h3
+//-       //- li
+//-         :process h3.children
+//-     :: h4
+//-       ul
+//-         li
+//-           :process h4.children
+//-     li
+//-       :process section.children
+//-   //- :: h1
+//-   //- :: * (any)
+//-   ul
+//-     :process.ParseTextree
+//-       :process.ReadFile
+//-         fs:path
+//-           :process toc.attributes.path
+
+page
+  .titre = Spécifications
+
+  h1 Spécifications fonctionnelles et techniques
+    span.sub Relatives aux requêtes, au géocodage et au référentiel adresse sous-jacent
+    //- aux capabilités, performances et qualité
+
+
+  section
+    //- h2.center ...
+
+    section.half
+      //- h3 Spécifications
+      div.center
+        img.width=100%.style=margin-bottom:2em
+          .src = structuration-qualite/rapprochement.svg
+          .alt = Le moteur de rapprochement s’appuie sur la base d’adresses de référence pour géocoder l’adresse soumise en entrée.
+
+      h3 Spécifications techniques (à venir)
+
+      section
+        //- h4 {a(href=api/) Requête et réponse de l’API}
+        h4 Requête et réponse de l’API
+      section
+        //- h4 {a(href=api/geocodejson) Le standard GeocodeJSON}
+        h4 Le standard GeocodeJSON
+      section
+        //- h4 {a(href=api/indicateur-qualite) Indicateurs de qualité}
+        h4 Indicateurs de qualité
+        --
+         - Voir aussi : {a(href=../etat-des-lieux/indicateur-de-qualite/) Indicateur de qualité : oui mais lequel ?}
+      section
+        //- h4 {a(href=batch/) Outils de géocodage de masse}
+        h4 Outils de géocodage de masse
+
+
+    section.half
+      h3 Spécifications qualitatives
+
+      section
+        h4 {a(href=structuration-qualite/requete) Qualité de l’adresse en entrée}
+        //- toc
+        //-   .path = specs/structuration-qualite/requete.tt
+        --
+         - Une adresse {i géographiquement} valide
+         - Conformité du formattage
+          //- --
+          //-  - Formatage postal
+          //-  - Adresse sur une ligne
+          //-  - Adresses à la norme administrative
+         - Exactitude
+         //- --
+         //-   - Tolérance aux orthographes alternatives et fautes d’orthographe
+         //-   - Complétude de l’adresse
+
+        h4 {a(href=structuration-qualite/referentiel) Qualité du référentiel adresse}
+        --
+         - Exhaustivité horizontale : présence de toutes les adresses
+           //-  - Actualité des données
+           //- --
+           //-  - Continuité des adresses
+         - Exhaustivité verticale : présence de tous les attributs
+           //- --
+           //-  - Libellés d’acheminement
+           //-  - Lieux-dits
+           //-  - Codes postaux
+         - Interopérabilité : stabilité des identifiants
+         - Indicateurs de précision et de fiabilité
+           //- --
+           //-    - Qualité du moteur de rapprochement
+
+        h4 {a(href=structuration-qualite/rapprochement) Qualité du moteur de rapprochement}
+        --
+         - Recherche libre et structurée
+           //- --
+           //-  - Recherche et filtres
+         - Tolérance aux erreurs de frappe
+         - Correspondance partielle
+         - Préférence géographique
+           //- --
+           //-  - Internationalisation
+         - Richesse et flexibilité du résultat
+           //- --
+           //-  - Système de référence spatial (SRS)
+           //-  - Adresse structurée
+           //-  - Adresse formatée
+           //-  - Attributs supplémentaires
+         - Coefficient de correspondance
+
+  div.grey
+   section
+    h2 État d’avancement : en cours de concertation
+    - Les spécifications émergent de la confrontation des besoins, en les regroupant pour former des consensus sur différents périmètres d’exigences.
+    - Ces spécifications sont proposées et actuellement discutées. Une fois actée par les participants (courant 2017), une version sera figée pour pouvoir engager le contrôle et l’intégration d’un service de géocodage conforme.
+    - Les spécifications ne cessent pas d’évoluer cependant.
+
+  //----------------------------------------------------------------------------
+
+  //- section
+  //-   h2 Objectif : aboutir à des spécifications fonctionnelles rigoureuses
+  //-     span.sub Relatifs aux outils de géocodage répondant aux besoins identifiés
+
+  //-   - Le livrable visé est un document qui synthétise ce qui est attendu d’un service de géocodage répondant aux besoins des administrations.
+  //-   - La méthode adoptée est {b itérative} :
+  //-   -0
+  //-    - des articles sont publiés à l’issue des réflexions issues du diagnostic ;
+  //-    - ces articles sont commentés, discutés, amendés ;
+  //-    - un travail de synthèse est ensuite réalisé pour convertir les {i études} en {i prescriptions} fonctionnelles aboutissant à un {i draft de spécifications} ;
+  //-    - des échanges écrits font évoluer le draft en spécifications {i définitives} faisant consensus entre les principaux acteurs et utilisateurs publics de géocodage.
+
+
+  //- div.grey
+  //-  section
+  //-   h2 Articles d’études et réflexions
+
+  //-   section
+  //-     h3 {a(href=structuration-qualite/) Comment distinguer les composants de la qualité globale ?}
+
+  //-     - Un service de géocodage repose sur une base d’adresses de référence : c’est un moteur de recherche qui va tenter d’apparier l’adresse recherchée aux adresses référencées dans la base de référence. La qualité se répartit sur ces 3 pôles :
+  //-     --
+  //-      - Qualité de l’adresse en entrée
+  //-      - Qualité du référentiel adresse
+  //-      - Qualité du moteur de rapprochement
+  //-     //- -
+  //-     //-   big › {a(href=structuration-qualite/) Lire l’article complet}
+
+  draft.
+    - GeocodeJson

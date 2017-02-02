@@ -1,0 +1,10 @@
+
+:on adr
+  samp.adresse
+    :process adr.children
+
+:on adresse (adr)
+  samp.adresse
+    a
+      :attr.href = png_path_carte + "?adresse&#x3d;" + adr.children[0].text
+      :process adr.children

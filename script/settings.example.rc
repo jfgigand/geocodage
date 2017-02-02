@@ -1,0 +1,8 @@
+# Database settings for scripts                 -*- shell-script -*-
+
+PSQL_HOST=10.0.3.39
+PSQL_PORT=5432
+PSQL_USER=postgres
+PSQL_PASSWORD=
+PSQL_DATABASE=png
+

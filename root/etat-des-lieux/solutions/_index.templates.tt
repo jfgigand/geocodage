@@ -1,0 +1,21 @@
+:on solutions
+
+  section
+    h2
+      :process solutions.attributes.type
+
+    :on solution
+
+      section
+
+        h3
+          :process solution.attributes.titre
+
+        div
+            a.target=_blank
+              :attr.href = solution.attributes.url
+              :process solution.attributes.url.replace(/^https?:\/\//, "")
+
+        :process solution.children
+
+    :process solutions.children

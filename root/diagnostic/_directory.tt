@@ -1,0 +1,2 @@
+:process. {type:"meta", name: "header", header: "Location", value: "/etat-des-lieux/"+REQUEST.path.remaining.join('/')}
+:process. {type:"meta", name: "status", value:301}

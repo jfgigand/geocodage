@@ -1,0 +1,143 @@
+page
+  .titre = CR avancement 13 sept. 2016
+
+  h1#top-title Suivi
+    span.sub Compte-rendu d’avancement du 13/09/2016
+
+  section
+    h2 Tests
+
+    section
+      h3 Développement d'un géocodeur interactif
+      - Un outil de recherches d’adresses interactives est maintenant {a.href=/outils/carte/ accessible ici}, permettant de comparer les résultats de différents services de géocodages avec leur localisation sur la carte.
+      - Sont considérés pour l’instant les 3 services de référence :
+      --
+       - Géoportail IGN OpenLS (BD Adresse, BD Topo)
+       - Addok (BAN)
+       - Google
+      - Cet outil ne remplace pas les chaînes de tests automatisés mais il est nécessaire qu’il existe afin de pouvoir rapidement vérifier l’interprétation d’une adresse par ces différents géocodeurs. Il est également utile pour mettre des adresses en liens hypertexte lors des échanges, par exemple : {adr 73 avenue de Paris 94165 SAINT-MANDÉ CEDEX}
+
+    section
+      h3 Abandon de l’approche FME
+      - Au mois de juin et juillet, Etienne Dumont (département des produits externes) a préparé une chaîne de traitement basé sur FME pour géocoder des fichiers CSV avec plusieurs services de géocodage en parallèle. Une interface web (GTF) permettait de déposer un fichier CSV et un email prévenait d’une erreur éventuelle dans le traitement ou d’un lien pour récupérer le résultat.
+      - Cette approche n’a finalement pas été retenue car :
+      --
+       - la chaîne n’est maniable que par le département des produits externes (composition des requêtes HTTP, paramètres et conditions particulières dans le géocodage...).
+       - la chaîne est peu portable à cause des contraintes de licence FME
+       - FME n’étant pas un logiciel libre, le référentiel de test ainsi constitué ne serait pas libre non plus, contredisant la dimension d’ouverture décidée pour ce PIA
+
+    section
+      h3 Reprise de geocoder-tester
+      - L’auteur de Addok, Yohan Boniface (SGMAP), a également développé des tests automatisés pour travailler son géocodeur et surveiller les régressions. Il s’agit d’un programme en ligne de commande, écrit en Python, se voulant indépendant d’un géocodeur particulier : il s’appelle {b {ext(href=https://github.com/geocoders/geocoder-tester/) geocoder-tester}}.
+      - À cette occasion, il a proposé une norme de réponse de géocodage : {ext(href=https://github.com/geocoders/geocodejson-spec/tree/master/draft) geocodejson-spec}, soutenue par quelques autres contributeurs. Elle est formatée en JSON et hérite du standard GeoJSON.
+      - Les tests sont des fichiers CSV, YAML ou Python (au choix, ou mixte), organisés en répertoires. Ainsi les adresses de test sont triées par pays puis régions. Pour une adresse, on peut indiquer le résultat attendu sous forme de coordonnées + rayon, identifiant du point adresse et/ou champs de l’adresse structurée.
+
+
+    section
+      h3 Développement de geocoder-proxy
+      - Pour que {i geocoder-tester} puisse tester le géocodeur de l’IGN, il faut que celui-ci soit consommable par API conforme au GeocodeJSON. C’est aussi vrai pour le géocodeur de Google ou tout autre géocodeur à part Addok aujourd’hui.
+      - De plus, geocoder-tester ne permet pas de tester les géocodeurs batch et notamment asynchrones (comme le géocodeur WPS de l’IGN). Il existe une approche possible mais qui ne peut pas être intégrée à geocoder-tester sans le complexifier outre mesure.
+      - Un nouveau programme voit donc le jour : {b geocoder-proxy}, qui sert à interroger tous types de services (IGN, Addok, Google...) à travers une interface unique, conforme à la norme GeocodeJSON. Développé pour les tests du PIA, ce projet est par ailleurs utile en tant que {q passerelle de géocodage} pour d’autres entités en production.
+      - Il est développé en Javascript/NodeJS et utilise la bibliothèque {ext(href=https://github.com/nchaulet/node-geocoder/) node-geocoder} qui gère (déjà) le requêtage de multiples services de géocodage tels que Google, HERE, MapQuest, Tom Tom et Addok/BAN.
+
+
+  div.grey
+   section
+    h2 Qualité
+
+    section
+      h3 Côté base : l’importance des lieux-dits
+      - Parmi les principales insatisfactions liées au géocodage, il y a le manque de prise en compte {b directe et indirecte} des lieux dits, à savoir :
+      --
+       - lieux-dits pas tous présents en tant que résultat, malgré leur présence sur la carte. Géocodage IGN : BD topo pas intégralement indexée ? BAN : les lieux-dits sans numéros ne seront intégrés que dans quelques mois ;
+       - lieux-dits plutôt mal pris en compte dans les adresses : en tant que {q ligne 5 de l’adresse} (sorte de quartier, localité entre la voie et le libellé d’acheminement) et en tant que libellé d’acheminement (qu’on appelle à tort la {i commune}).
+      - Les exemples sont nombreux dans le {a(href=/benchmark/jeux/XA/) jeu XA} ({q adresses de Fionn}), par exemple : {ext(href=/recherche/?adresse=1+Avenue+des+Thermes+32150+BARBOTAN+LES+THERMES&firstresults=true) 1 Avenue des Thermes 32150 BARBOTAN LES THERMES}.
+      - {b Pour bien différencier qualité du moteur et qualité de la base de données, il faut étudier minutieusement chaque cas} ; la qualité {i perçue} est pour une bonne part liée à la base.
+
+    section
+      h3 Comment organiser les tests ? Quoi tester ?
+      - geocoder-tester peut vérifier pour chaque adresse (en champ libre) les propriétés à vérifier :
+      --
+       - coordonnées géographique + rayon en mètres
+       - valeur de l’identifiant du point
+       - valeur d’une ou plusieurs propriétés : voie, code postal, commune...
+      - Tester les coordonnées géographiques concerne plutôt la base que le moteur. En théorie, c’est l’identifiant qui teste le plus rigoureusement le moteur (adéquation entre texte cherché et adresse trouvée), à l’exception des adresses interpolées. Les identifiants ne sont cependant pas portables (différent selon Google, HERE ou IGN...).
+      - Tester les champs structurés (voie, commune...) peut manquer de fiabilité, preuve en est {ext(href=https://github.com/openvenues/libpostal) libpostal}, un programme qui sait structurer les adresses (dans le monde) indépendamment de la géographie et de toute base d’adresses.
+
+      - Autre question : comment définit-on le jeu d’adresses à tester ? Les 13 000 adresses fournies par le Service des bases de données vecteurs n’englobent pas tous les cas. Peut-on utiliser la carte pour choisir les adresse ? Ou rassembler des adresses que nous connaissons absolument (famille, vacances...) ?
+      //- - le SAI utilise la plateforme Squash
+
+  section
+    h2 Prises de contact
+
+    section
+      - Le contact est établi avec Yohan Boniface et Christian Quest du SGMAP (2 réunions), permettant de compléter la connaissance de l’existant qui avait été étudié à l’IGN en mai. La col<laboration se fait autour de l’outil geocoder-tester et des problématiques de géocodage expérimentées à travers Addok.
+      - Le contact est établi avec Julien Moquet (Préfecture de Police) et un rendez-vous est planifié le 15 novembre.
+      - Prises de contact en cours :
+      --
+       - Nathalie Letessier (Ville de Créteil)
+       - Albert Da Silva (Géoconcept)
+      - Autre entités à contacter :
+      --
+       - RATP ?
+       - Mairie de Paris ?
+       - Autres ministères ?
+      - Les contacts se font dans un double objectif : reccueillir les besoins et faire adhérer ces acteurs ou usagers à notre démarche
+
+  div.grey
+   section
+    h2 Communication
+
+    section
+      h3 Article ECHANGER
+      - Un article présentant le projet de façon succinte paraîtra dans ECHANGER septembre-octobre, grâce à la collaboration de Sandrine Paquier (département communication).
+
+    section
+      h3 Proposition d'intervention DécryptaGéo janvier 2017
+      - Les rencontres/conférences DécryptaGéo à l’ENSG auront lieu l’année prochaine en janvier (au lieu de juin, habituellement). L’appel à propositions se termine le 30 septembre prochain.
+      - Il serait opportun de {ext(href=http://lesrencontres.decryptageo.fr/appel-a-propositions-2/) proposer un compte-rendu de ce projet}.
+
+    section
+      h3 Site web : bientôt publié en tant que geocodage.ign.fr
+      - Ce site disposera très prochainement du domaine geocodage.ign.fr et pourra donc être publié, après validation de son contenu.
+
+    section
+      h3 Blog : raconter avec transparence ce qui est fait, cherché, trouvé
+      - Le projet est à géométrie variable : la démarche qualité (les tests) ne peut être explicitée qu’à posteriori. Pour préserver une communication linéaire, on peut se limiter (au début) à un blog, expliquant tantôt le sujet (du géocodage), tantôt la méthode (forme et fond), d’une manière libre et transparente.
+
+  section
+    h2 Suivi
+
+    section
+      h3 Comité de suivi
+      - Suite à la période estivale, nous reprenons le rythme des comités de suivi bi-mensuels.
+      - Un compte-rendu d’avancement comme celui-ci sera chaque fois préparé en amont en envoyé aux membres afin de réserver le comité aux échanges de fond et permettre aux absents d’en prendre connaissance et de réagir le cas échéant.
+
+    section
+      h3 Indicateurs d'avancement
+      - À confirmer (les indicateurs nouvellement proposés sont en gras) :
+
+      h4 Indicateurs de réalisation
+      --
+       - Mise en place de la gouvernance interne
+       - {b Prise de contacts extérieurs}
+       - Livraison d’un environnement de collaboration des parties prenantes autour du géocodage
+       - Livraison d’un environnement de qualification des algorithmees de géocodage
+       - Livraison d’une chaîne de déploiement et une plateforme de production
+       - {b Mise en place d’un blog et publication de billets}
+
+      h4 Indicateurs de résultat
+      --
+       - {b Nombre de rendez-vous extérieurs}
+       - {s Nombre de comptes sur la plateforme en fin de projet}
+       - {b Visites sur site vitrine du projet}
+       - {s Nombre d’utilisateurs actifs du service de géocodage (partie autocomplétion)}
+       - {b Nombre de contributeurs à la démarche qualité}
+       - Nombre d’utilisateurs actifs d’un ou plusieurs autres services de géocodage
+
+      h4 Indicateurs d’impact
+      --
+       - {b Nombre d’articles de presse extérieurs à propos du projet}
+       - {s Pourcentage de satisfaction des utilisateurs de la plateforme}
+       - Nombre d’administrations utilisant des solutions de géocodage propriétaires
+       ayant amélioré leur solution de géocodage grâce aux publications

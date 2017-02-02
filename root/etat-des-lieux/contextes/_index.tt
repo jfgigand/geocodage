@@ -1,0 +1,14 @@
+page
+  .titre = Contextes-État des lieux
+
+  h1 Contextes d’exploitation
+
+  section
+      h2 Recherche cartographique
+
+  div.grey
+    section
+      h2 Transports
+
+  section
+      h2 Études statistiques

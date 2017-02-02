@@ -1,0 +1,92 @@
+page
+  .titre = Saine-Saint-Denis
+
+  h1 API du service géocodage du Géoportail à l’IGN
+    span.sub Interview de Thibault Coupin
+
+  interview
+
+    intro
+      img.floatr.width=120
+        .src = /assets/img/ign.png
+
+      - Thibault Coupin est chef de la division Services au pôle Géoportail. Entre autres missions, il a intégré le service de géocodage du géoportail. Dans cette interview, il nous en détaille les principes de fonctionnement et de modélisation des données sources.
+
+    question Vous êtes chef de la division services du pôle de développement Géoportail, et mainteneur du service de géocodage, dit {q API HTTP/OpenLS}. De quoi s’agit-il ?
+    reponse
+      - Il s’agit de géocodage d’adresses, de lieux-dits ou de parcelles cadastrales accessibles en 3 modes :
+      --
+       - direct (obtenir les coordonnées géographiques) ;
+       - inverse (obtenir l’adresse ou la parcelle à partir d’un point géographique) ;
+       - autocomplétion (suggestions permettant d’affiner la recherche à partir d’un extrait).
+
+    question Quel est le modèle d’organisation des données ?
+    reponse
+      - Le géocodage direct a un modèle assez simple : on a des communes, contenant des tronçons de voie, chacun délimité par une adresse de début et une adresse de fin. Il existe aussi des liens entre communes, utilisés par exemple pour les arrondissements de Paris et des quartiers tels que La Défense.
+      //- , {e Paris 75000} contient les arrondissements de Paris et de même avec la Défense
+      //- On peut faire la même chose avec la défense.
+
+      - Dans le modèle, les toponymes sont modélisés comme des communes, sinon on ne pourrait pas trouver le toponyme sans spécifier la commune (une contrainte du moteur Géoconcept). Mais pour éviter que les recherches de communes soit {q noyées} par les lieux-dits presque synonymes, le moteur recherche en premier lieu dans les toponymes qui sont des communes, avant d’élargir la recherche s’il n’y a pas de résultat.
+
+      - Le moteur de géocodage est {q nourri} de différentes données IGN. Pour l’adresse, on exploite les bases de données suivantes :
+      --
+       - BD Adresse : {e ADRESSE}, {e ROUTE_ADRESSE}
+       - BD CARTO : {e DEPARTEMENT}, {e REGION}
+       - BD TOPO : {e CHEF_LIEU}, {e HYDRONYME}, {e LIEU_DIT_HABITE}, {e LIEU_DIT_NON_HABITE}, {e TOPONYME_COMMUNICATION}, {e TOPONYME_DIVERS}
+      - La BD Adresse, en effet, ne contient pas les toponymes (lieux-dits).
+
+      - De la BD Adresse, on ne retient que les points Adresse qui sont positionnés avec la précision du numéro de rue (sinon, on exploite le tronçon de voie pour interpolation).
+
+      //- Mais sur géocodage inverse adresse : on supprime commune et voie. (laisser le géocodeur sait interpoler)
+
+
+    question Quelle est la stratégie de recherche ?
+    reponse
+      - Pour le {b géocodage direct} (d’adresse), on essaie de trouver une commune, puis on cherche le tronçon dans cette commune et enfin, la plaque adresse.
+      - S’ajoutent à ces critères hiérarchiques la possibilité de filtrer sur différentes composantes, par exemple la rue ou le type de lieu.
+      - On différencie la recherche (portant sur les {b données}) du filtrage (portant sur les {b métadonnées}).
+
+    question Comment fonctionne le {i géocodage inverse} ?
+    reponse
+      - On utilise PostGIS pour travailler sur la géométrie brute.
+      - La recherche peut se faire de différentes façons. On soumet au choix :
+      --
+       - un point, auquel un rayon de 100 mètres environ (défini en projection WGS 84) est appliqué par l’aglorithme ;
+       - un rectangle (ne dépassant pas 2 km de côté) ;
+       - un cercle (ne dépassant pas 1 km de rayon).
+      - Ces paramètres sont alors exploités directement dans la requête PostGIS.
+      //- Toponymes : données sont les mêmes mais avec notion de surface pour
+      - La réponse contient la distance entre la géométrie de l’entité résultante et le centroïde de la géométrie désignée par la requête (rectangle ou disque).
+
+      - Pour le géocodage inverse d’adresses, on ne renvoie que des points adresses.
+
+    question Comment fonctionne le {i géocodage de parcelles} ?
+    reponse
+      - Pour le {b gécodage de parcelles}, le modèle est différent car on est hors de l’utilisation classique du géocodeur Géoconcept (basé sur des modèles {q UGC}) alors qu’on ne fait pas d’analyse syntaxique pour le cadastre : la base de données cadastrales est interrogée directement avec les paramètres suivants :
+      --
+       - département,
+       - commune,
+       - commune absorbée,
+       - section,
+       - parcelle.
+
+      - Le géocodage {b inverse de parcelles} se fait par requête spatiale du point demandé en intersectant sur la surface des polygones de parcelles. Toutes les parcelles ne sont cependant pas disponibles en polygones (seules 90 % des parcelles de Frances ont été numérisées à ce jour). Pour contourner ce manque, on ajoute des localisants (ponctuels) de ces parcelles, ce qui signifie que la recherche de ces parcelle se fera par proximité du point recherché au centre des parcelles.
+
+    question Comment fonctionne le mode {i autocomplétion} ?
+    reponse
+      - Il doit interpréter des adresses que l’utilisateur à commencé à saisir, en faisant la correspondance sur le début, sans tenir rigueur de son état tronqué. On doit ainsi reconnaître les différentes formes d’acritures d’une adresse :
+      --
+       - adresse complète,
+       - adresse sans numéro,
+       - adresse sans type de voie,
+       - adresses {i dans autre sens} (commune en premier)
+      - Les adresses sont ainsi indexées sous ces différentes formes pour permettre la correspondance sur le début de la saisie, grâce à une base de données clefs/valeurs. Le moteur ne tolère aucune erreur.
+      - À l’adresse recherchée s’ajoute un filtrage éventuel, par exemple sur le territoire métropolitain, un DOM-TOM ou un département. En interne, le moteur de géocodage nous contraint à filtrer sur la ville ou le code postal.
+
+  section
+    h2 Références
+    --
+     - {ext(href=http://api.ign.fr/tech-docs-js/fr/developpeur/search.html) Documentation de l’API HTTP de géocodage IGN}
+     - {ext(href=http://professionnels.ign.fr/sites/default/files/DC_BDTOPO-2-1.pdf) Descriptif de contenu de la BD TOPO}
+     - {ext(href=http://professionnels.ign.fr/sites/default/files/DC_BDCARTO_3_1.pdf) Descriptif de contenu de la BD CARTO}
+     - {ext(href=http://professionnels.ign.fr/doc/DC_BDADRESSE_2-1.pdf) Descriptif de contenu de la BD Adresse}

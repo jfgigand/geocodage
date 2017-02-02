@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="708.66144"
+   height="708.66144"
+   viewBox="0 0 708.66143 708.66143"
+   id="svg3428"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="iteration.svg">
+  <defs
+     id="defs3430" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.70710678"
+     inkscape:cx="278.7869"
+     inkscape:cy="90.32352"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer2"
+     showgrid="false"
+     width="200mm"
+     inkscape:window-width="1198"
+     inkscape:window-height="1579"
+     inkscape:window-x="0"
+     inkscape:window-y="19"
+     inkscape:window-maximized="0"
+     units="px" />
+  <metadata
+     id="metadata3433">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Cercle"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-343.70087)">
+    <circle
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path3436"
+       cx="352.74527"
+       cy="698.60681"
+       r="269.71072" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer3"
+     inkscape:label="text BG"
+     style="display:inline;opacity:1">
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-opacity:1"
+       id="rect4260"
+       width="165"
+       height="65"
+       x="267.10049"
+       y="56.632" />
+    <rect
+       y="216.632"
+       x="514.10052"
+       height="70"
+       width="168"
+       id="rect4312"
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-opacity:1" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-opacity:1"
+       id="rect4314"
+       width="152"
+       height="54"
+       x="506.10049"
+       y="443.63199" />
+    <rect
+       y="585.63202"
+       x="280.10049"
+       height="64"
+       width="166"
+       id="rect4316"
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-opacity:1" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-opacity:1"
+       id="rect4318"
+       width="156"
+       height="52"
+       x="24.100506"
+       y="420.63199" />
+    <rect
+       y="207.632"
+       x="31.100506"
+       height="51"
+       width="144"
+       id="rect4320"
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-opacity:1" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer4"
+     inkscape:label="flèches">
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 510.5311,157.82525 26.16295,0 0,-24.39518"
+       id="path4346"
+       inkscape:connector-curvature="0" />
+    <use
+       x="0"
+       y="0"
+       xlink:href="#path4346"
+       id="use4348"
+       transform="matrix(0.73544017,0.67758967,-0.67758967,0.73544017,334.67374,-125.47375)"
+       width="100%"
+       height="100%" />
+    <use
+       x="0"
+       y="0"
+       xlink:href="#path4346"
+       id="use4350"
+       transform="matrix(0,1,-1,0,678.24026,28.015114)"
+       width="100%"
+       height="100%" />
+    <use
+       x="0"
+       y="0"
+       xlink:href="#path4346"
+       id="use4352"
+       transform="matrix(0,-1,1,0,26.156716,681.34434)"
+       width="100%"
+       height="100%" />
+    <use
+       x="0"
+       y="0"
+       xlink:href="#use4350"
+       id="use4354"
+       transform="matrix(0,1,-1,0,727.26407,26.559265)"
+       width="100%"
+       height="100%" />
+    <use
+       x="0"
+       y="0"
+       xlink:href="#use4348"
+       id="use4356"
+       transform="matrix(-1,0,0,-1,705.4098,698.65604)"
+       width="100%"
+       height="100%" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Etiquettes">
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="344.71182"
+       y="89.632004"
+       id="text3386"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         x="344.71182"
+         y="89.632004"
+         id="tspan3390"
+         style="font-size:16.25px;text-align:center;text-anchor:middle">Étudier les besoins</tspan><tspan
+         sodipodi:role="line"
+         x="344.71182"
+         y="109.9445"
+         style="font-size:16.25px;text-align:center;text-anchor:middle"
+         id="tspan3446">en géocodage</tspan></text>
+    <text
+       sodipodi:linespacing="125%"
+       id="text3392"
+       y="233.632"
+       x="599.71185"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       xml:space="preserve"><tspan
+         style="font-size:16.25px;text-align:center;text-anchor:middle"
+         id="tspan3396"
+         y="233.632"
+         x="599.71185"
+         sodipodi:role="line">Définir les</tspan><tspan
+         style="font-size:16.25px;text-align:center;text-anchor:middle"
+         y="253.9445"
+         x="599.71185"
+         sodipodi:role="line"
+         id="tspan3400">indicateurs</tspan><tspan
+         style="font-size:16.25px;text-align:center;text-anchor:middle"
+         y="274.25699"
+         x="599.71185"
+         sodipodi:role="line"
+         id="tspan3402">de qualité</tspan></text>
+    <text
+       sodipodi:linespacing="125%"
+       id="text3404"
+       y="228.632"
+       x="108.71183"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       xml:space="preserve"><tspan
+         style="font-size:16.25px;text-align:center;text-anchor:middle"
+         id="tspan3408"
+         y="228.632"
+         x="108.71183"
+         sodipodi:role="line">Reccueillir</tspan><tspan
+         style="font-size:16.25px;text-align:center;text-anchor:middle"
+         y="248.9445"
+         x="108.71183"
+         sodipodi:role="line"
+         id="tspan3440">les retours</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="100.71183"
+       y="439.63193"
+       id="text3410"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         x="100.71183"
+         y="439.63193"
+         id="tspan3414"
+         style="font-size:16.25px;text-align:center;text-anchor:middle">Publier</tspan><tspan
+         sodipodi:role="line"
+         x="100.71183"
+         y="459.94443"
+         style="font-size:16.25px;text-align:center;text-anchor:middle"
+         id="tspan3436">les résultats</tspan></text>
+    <text
+       sodipodi:linespacing="125%"
+       id="text3416"
+       y="613.63196"
+       x="367.71182"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       xml:space="preserve"><tspan
+         style="font-size:16.25px;text-align:center;text-anchor:middle"
+         id="tspan3420"
+         y="613.63196"
+         x="367.71182"
+         sodipodi:role="line">Tester les services</tspan><tspan
+         style="font-size:16.25px;text-align:center;text-anchor:middle"
+         y="633.94446"
+         x="367.71182"
+         sodipodi:role="line"
+         id="tspan3442">de géocodage</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="595.71185"
+       y="462.63193"
+       id="text3422"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         x="595.71185"
+         y="462.63193"
+         id="tspan3426"
+         style="font-size:16.25px;text-align:center;text-anchor:middle">Intégrer les</tspan><tspan
+         sodipodi:role="line"
+         x="595.71185"
+         y="482.94443"
+         style="font-size:16.25px;text-align:center;text-anchor:middle"
+         id="tspan3430">jeux de test</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="366.0751"
+       y="345.63199"
+       id="text3448"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3450"
+         x="366.0751"
+         y="345.63199"
+         style="font-size:35px;text-align:center;text-anchor:middle">Les 6 étapes</tspan><tspan
+         sodipodi:role="line"
+         x="366.0751"
+         y="389.38199"
+         id="tspan3452"
+         style="font-size:35px;text-align:center;text-anchor:middle">d'une itération</tspan></text>
+  </g>
+</svg>

@@ -1,0 +1,9 @@
+jeu#CJ
+
+  titre Zéros non significatifs dans numéro de voie
+
+  definition Un ou plusieurs zéros sont ajoutés en préfixe du numéro de voie
+
+  exemples
+    - 0073 avenue de Paris 94160 SAINT-MANDÉ
+    - 015 rue Lacharrière 75011 PARIS

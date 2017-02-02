@@ -1,0 +1,11 @@
+jeu#CA
+
+  titre Lieu-dit ou monument célèbre
+
+  definition L’adresse est l’appellation commune d’un lieu touristiquement célèbre en France, telle qu’on la nomme informellement.
+
+  production Entités d’après informations touristiques (Open Data), localisation d’après cartographie IGN
+
+  exemples
+    - Tour-Eiffel
+    - Stade de France

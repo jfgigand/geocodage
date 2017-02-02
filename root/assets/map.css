@@ -1,0 +1,17 @@
+form { margin: 0; }
+
+input.adr { width: 40em; }
+#results { width: 400px; margin: 0; padding: 0; }
+.result { margin: 0 0 0.5em; padding: 0.5em; background: #eee; border: 1px solid #ccc; }
+.result.focus { outline: 5px solid #888; }
+.result.google { background: #fdd; }
+.result.addok-ban { background: #ddf; }
+.result.ign-openls { background: #dfd; }
+.result .api-logo { margin: 0 0.5em 0 0; }
+.result .ref { margin: 0 0 0.5em; font-family: monospace; }
+.result .ref .precision { font-size: 0.8em; }
+.result .point { }
+.result .formatted { font-weight: bold; }
+.result .identifier { font-family: monospace; font-style: italic; font-size: 0.8em; }
+
+#map { width: 570px; height: 700px; margin: 0 0 0 410px; }

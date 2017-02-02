@@ -1,0 +1,33 @@
+page
+  .titre = Modes-État des lieux
+
+  h1 Modes et types de géocodage
+
+  section
+      h2 Modes de géocodage
+
+      section
+        h3 Mode direct
+
+      section
+        h3 Mode inverse
+
+      section
+        h3 Mode auto-completion
+
+
+  div.grey
+    section
+      h2 Types d’adressage
+
+      section
+        h3 Géocodage d’adresses
+
+      section
+        h3 Géocodage de toponymes
+
+      section
+        h3 Géocodage de territoires
+
+      section
+        h3 Géocodage de parcelles cadastrales

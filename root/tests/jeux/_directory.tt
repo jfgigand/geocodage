@@ -1,0 +1,94 @@
+:: jeu
+
+  page
+      // Ce ":attr" n'est pas pris en compte pour un template (TODO in Proc)
+      :attr.titre = "Jeu "+jeu.attributes.id
+
+      :: titre
+        :var jeu.titre = titre.children
+      :: definition
+        :var jeu.definition = definition.children
+      :: production
+        :var jeu.production = production.children
+      :: exemples
+        :var jeu.exemples = exemples.children
+      :: remarques
+        :var jeu.remarques = remarques.children
+
+      :process jeu.children
+
+      h1 Tests
+        span.sub Échantillon {span.code {:process jeu.attributes.id}} :
+          :process " "
+          :process jeu.titre
+
+      section
+        h2 Adresses concernées par ce jeu
+        -
+          :process jeu.definition
+
+        :if jeu.production
+          section.production
+            h3 Mode de production
+            :process jeu.production
+
+        :if jeu.remarques
+          section.remarques
+            h3 remarques
+            :process jeu.remarques
+
+        :if jeu.exemples
+          section.production
+            h3 Exemples
+            --
+              :: - (n) {li.adresse {:process n.children}}
+              :process jeu.exemples
+
+      div.grey
+        section
+          //- h2 Synthèse des résultats
+          h2 Adresses de test
+          //- :process.ParseCsv
+
+          -
+            a.target=_blank
+              :attr.href = "../"+jeu.attributes.id+".csv"
+              | Télécharger au format CSV
+            //- span &middot;
+            //- a.target=_blank
+            //-   :attr.href = "https://github.com/plateforme-nationale-geocodage/geocodage/blob/textree/root/benchmark/jeux/"+jeu.attributes.id+".csv"
+            //-   | Contenu sur GitHub
+
+          table.border.wide
+            thead
+              tr
+                th numero
+                th voie
+                th code postal
+                th localité
+                th &nbsp;
+            tbody
+              :: csv:row (adresse)
+                tr
+                  td
+                    :process adresse.attributes.numero
+                  td
+                    :process adresse.attributes.voie
+                  td
+                    :process adresse.attributes.code_postal
+                  td
+                    :process adresse.attributes.commune
+                  td.center
+                    a
+                      :attr.href. = png_path_carte + "?adresse"+String.fromCharCode(61)+ ["numero", "voie", "code_postal", "commune"].map(function(p) { return adresse.attributes[p]; }).join(" ")
+
+                      //- :attr.href = ["numero", "voie", "code_postal", "commune"].map((p) => adresse.attributes[p]).join(" ")
+                      | Géocoder
+
+              :process.ParseCsv
+                :process.ReadFile
+                  fs:path
+                    :process "tests/jeux/"+jeu.attributes.id+".csv"
+
+
+:process-next-route

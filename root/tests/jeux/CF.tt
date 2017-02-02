@@ -1,0 +1,5 @@
+jeu#CF
+
+  titre Présence optionnelles des accents et ligatures
+
+  definition Adresses présentant des caractères accentués dans le nom de voie ou de ville. Pour moitié les adresses recherchée ont les accents et pour l’autre moitié les accents sont omis. Différents accents sont ainsi testés, ainsi que les ligatures tels que {q œ} (sous la forme ligaturée ou non : {q oe})

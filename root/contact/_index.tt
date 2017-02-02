@@ -1,0 +1,44 @@
+page
+  .titre = Contact
+
+  h1 Comment prendre contact ?
+
+  section
+
+      h2 Contact par email
+      - Vous souhaitez :
+      --
+       - donner votre avis,
+       - obtenir des précisions,
+       - être rappelé(e),
+       - solliciter un rendez-vous...
+
+      //- div.style=margin-top:5em;
+  div.grey
+    section
+        - N’hésitez pas à contacter Jean-François Gigand, animateur de la plateforme nationale de géocodage :
+        -
+          big
+            e.bold animateur@plateforme-nationale-geocodage.fr
+
+  section
+        - Sur les sujets plus spécifiques :
+        big
+          -
+            e {b diagnostic}@plateforme-nationale-geocodage.fr
+          -
+            e {b specifications}@plateforme-nationale-geocodage.fr
+          -
+            e {b tests}@plateforme-nationale-geocodage.fr
+
+  div.grey
+    section
+      image
+        .src = ./plan.png
+        | Mission pilotée par l’IGN, au :{br}
+        | {b 73 avenue de Paris 94160 SAINT-MANDÉ}{br}
+        | {a.button(href=/outils/carte/?adresse=73+avenue+de+Paris+94160+SAINT-MANDÉ) Géocoder l’adresse}
+
+  //- section
+  //-   h2 Rendez-vous
+  //-   - Basée à Paris, la mission couvre le territoire français

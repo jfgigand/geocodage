@@ -1,0 +1,126 @@
+page
+  .titre = Tests
+
+  draft.
+    la rubrique devient CONTRÔLE
+    les TESTS sont une sous-partie
+    il y a aussi la méthode
+    qui consiste à lancer des exercices (qui sont alors datés)
+    un exercice est une exécution du contrôle à un moment sur une cible dans une configuration
+    la méthode retient... il y a plusieurs méthodes
+    ont élabore ça en décrivant
+
+    on contrôle la BAN
+    - identifiants :
+
+    pour les parties :
+    - tests : comment tester : poser les questions
+    - division entre moteur, référentiel, requêtes, interface (qualitatif - ergonomie) et performances (quantitatif)
+    - commencer à caractériser : Addok, IGN, Googlen ainsi que BD Adresse, BAN
+
+    garantie de service
+    licence
+
+    ==> ÉVALUATION
+    LA MÉTHODE
+    élaboration de la méthode :
+    moteur :
+    - peupler avec référentiel donné
+    référentiel
+    - trouver s’il y a des infos écrites du SBV sur la BD Adresse
+    - demander à l’INSEE
+
+    requête
+    LES TESTS
+    constitution des tests
+    - référentiel de test
+    - tests sur ce référentiel : pour orthographe, adresses partielles, erreurs partielles...
+
+  h1 Procédure et jeux de tests automatisés
+
+  section
+   section.half
+    h2 Objectifs
+    --
+     - Permettre l’évaluation objective et exhaustive d’un service de géocodage selon les spécifications de la qualité
+     - Produire un rapport de test de façon automatisée
+     - Faciliter les développements et la recette ({i {ext(href=https://fr.wikipedia.org/wiki/Test_driven_development) test-driven development}})
+     - Mutualiser les anomalies et capitaliser sur l’expérience des problèmes rencontrés
+
+   section.half
+     img.width=400
+       .src = sadt-geocode-test.svg
+
+  div.grey
+    section
+     section.half
+       h2 Structuration des tests
+       - Les tests consistent en des jeux d’adresses {i à géocoder}, accompagnées des valeurs {i attendues}.
+       - Prenons par exemple l’adresse {adresse 73 avenue de Paris 94160 Saint-Mandé}. On attendra du géocodeur un unique résultat tel que :
+       --
+        - la commune identifiée soit {i Saint-Mandé} dans le {i Val-de-Marne (94)} ;
+        - la voie identifiée soit {i avenue de Paris} et le numéro {i 73} ;
+        - le point géographique soit situé devant le bâtiment ou dans la propriété.
+
+     section.half
+       h2 Exécution des tests
+       - Le logiciel de test s’exécute sur ces jeux d’adresses et pour chacune chaque adresse :
+       --
+        - interroge le service de géocodage désigné pour cette exécution ;
+        - récupère la réponse et la confronte au résultats {i attendus} qui sont renseignés dans le jeu ;
+        - établisse un statut (succès/échec) pour cette occurence et le cas échéant, enregistre dans un journal les raisons de l’échec.
+       - Une fois l’exécution terminée, le logiciel établit un rapport avec le niveau de synthèse demandé (statistiques globales, selon catégories d’adresses, voire, avec le détail de tous les échecs).
+
+  section
+    h2.center Classification des jeux d’adresses
+      span.sub À l’état d’ébauche
+
+    - Les jeux de tests s’articulent selon les {a(href=../specs/) spécifications}, elles-mêmes à l’état de brouillon de travail tant que le {a(href=../diagnostic) Tour de France du géocodage} se poursuit. Voici néanmoins une ébauche de classification pour aider au travail de formalisation.
+
+    div.actions
+      a.button.href=jeux/ Cliquer ici pour la liste complète détaillée
+
+    :var. _jeux = { idx: 0 }
+
+    :: jeu
+
+      :: titre
+        :var jeu.titre = titre.children
+      :: definition
+        :var jeu.definition = definition.children
+      :: production
+        :var jeu.production = production.children
+      :: exemples
+        :var jeu.exemples = exemples.children
+      :: remarques
+        :var jeu.remarques = remarques.children
+
+      :process jeu.children
+
+      div.facette
+        :var _jeux.idx = _jeux.idx + 1
+        :if 1 == _jeux.idx % 2
+          :attr.class = "facette grey"
+
+        span.floatr.small
+          a
+            :attr.href = "jeux/" + jeu.attributes.id + ".csv"
+            |CSV
+          middot
+          a.target=_blank
+            :attr.href = "https://github.com/plateforme-nationale-geocodage/geocodage/blob/textree/root/tests/jeux/"+jeu.attributes.id+".csv"
+            |GitHub
+        a
+          :attr.href = "jeux/" + jeu.attributes.id + "/"
+          span.code
+            :process jeu.attributes.id
+          //- span =
+          //-   :process ""+_jeux.idx+" // "+(_jeux.idx % 2)
+
+          :process jeu.titre
+
+    section
+      h3 Liste des jeux
+      :process.ParseTextree
+        :process.ReadFile
+          fs:glob tests/jeux/[A-Z]*.tt

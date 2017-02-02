@@ -1,0 +1,9 @@
+jeu#XA
+
+  titre Adresses mal géocodées, à classer
+
+  definition Ce jeu contient des adresses difficiles ou impossibles à géocoder.
+
+  production Ce jeu a été constitué par Fionn Halleman
+
+  remarques L’analyse révèle que dans un certain nombre de cas, la localité (à droite du code postal) n’est pas une commune mais le nom du quartier ou du lieu-dit.

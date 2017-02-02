@@ -1,0 +1,71 @@
+page
+  .titre = Indicateur de qualité
+  .github-issue = 8
+
+  h1 Indicateur de qualité : oui mais lequel ?
+    span.sub Coefficient de correspondance -versus- précision du résultat
+
+  intro
+    - Un géocodage retourne pour chaque résultat un coefficient de correspondance, qu’on interprète souvent comme {i indice de confiance} pour son exploitation. Est-ce pour autant une indication sur la précision géographique du point ?
+
+  section
+      h2 Coefficient de correspondance : {q le résultat est-il {u le} bon ?}
+      - Le coefficient de correspondance se situe entre 0 et 100 % : plus il est élevé et plus l’adresse identifiée correspond textuellement à l’adresse recherchée. En principe, une adresse {i parfaite} (et {i parfaitement rédigée}) aura un score de 100 %, pourvu qu’elle soit connue du géocodeur.
+      - Ce coefficient sert principalement à ordonner les résultats, s’il y en a plusieurs, et pour sélectionner le meilleur dans le cas de géocodage de masse (où seul le meilleur résultat est conservé).
+      - Peut-on parler d’{i indicateur de qualité} ? Oui, s’il s’agit de la qualité {b du rapprochement} et non pas du point géographique.
+      - La question n’est pas ici de savoir si le résultat est fiable, mais si c’est le bon résultat pour l’adresse recherchée, compte-tenu des écarts dans la façon d’écrire l’adresse.
+      - Naturellement, un faible coefficient de correspondance (par exemple, {e 40 %}) indique un doute dans le résultat qui est bien {i pire} qu’une imprécision géographique. L’adresse identifiée par l’algorithme peut être à 500 km de l’adresse supposée, quand une imprécision se limite généralement à des écarts de numérotation et de voies.
+
+  div.grey
+    section
+      h2 Indicateur de précision : {q le résultat est-il bon ?}
+      - Contrairement au coefficient de correspondance, qui appartient à l’algorithme de géocodage, l’indicateur de précision provient des données du référentiel : une adresse référencée au mauvais endroit le sera toujours en tant que résultat de géocodage. En ce sens, le géocodeur n’a pas de conscience géographique.
+
+      section
+        h3 Type de positionnement
+        - Il y a premièrement le {i type de positionnement}. Par exemple, le {ext(href=http://professionnels.ign.fr/sites/default/files/DC_BDADRESSE_2-1.pdf) descriptif de contenu de la BD Adresse} de l’IGN indique des adresses :
+        --
+         - réparties de part et d’autre d’un tronçon de route par projection du centre d’une parcelle
+         - réparties de part et d’autre d’un tronçon de route par interpolation linéaire
+         - localisées de part et d’autre du début du premier tronçon d’une voie (possibilité de superposition de plusieurs adresses)
+         - positionnées au complément d’adressage
+         - positionnées à la plaque adresse ou à l’entrée de parcelle
+         - positionnées au centre d’une zone d’adressage (possibilité de superposition de plusieurs adresses)
+         - positionnées au centre de la commune (possibilité de superposition de plusieurs adresses)
+
+      - Il est nécessaire de comprendre ces méthodes de positionnement pour connaître les biais possibles. Par exemple, la largeur des voies est arbitrairement estimée à 9 mètres, introduisant un biais du point adresse entre la propriété et le milieu de la voie.
+
+      section
+        h3 Précision des géométries sources
+
+        - Les géométrie sources sont à la base du positionnement des adresses : ce sont les axes de voies, les limites communales, etc. Elles sont acquises par différentes méthodes (photogrammétrie, levé GPS, report de plan...) avec une précision donnée.
+        - Exprimée en mètres, cette précision est documentée pour chaque adresse.
+
+      //- section
+      //-   h3 Type de localisant
+      //-   - Il y a enfin le type de localisant du point : boîte aux lettres, porte, bâti, parcelle cadastrale...
+      //-   - Cette information est liée au type de positionnement : si le positionnement est précis, le localisant est en principe inséparable des coordonnées du point, pour l’information adresse. Par exemple, Google Maps localise de nombreuses adresses au toit du bâti.
+
+
+  section
+      h2 Signification des indicateurs
+
+      section
+        h3 La précision : pourquoi faire ?
+        - Le besoin de précision dépend de l’exploitation faite des résultats de géocodage.
+        --.spaced
+         - Si c’est pour y accéder par le réseau routier, le respect de la voie d’accès sera importante (en cas de double voie bordant une propriété) et notamment le {q bon côté de la rue} ; l’interpolation éventuelle et le décalage linéraire ont aussi leur importance.
+         - Pour une étude IRIS ou zonale (par exemple, savoir si une adresse appartient à un quartier prioritaire), le besoin de précision est différent compte-tenu du tronçon qui peut démarquer deux quartiers.
+
+      section
+        h3 Qu’est-ce qu’un {q bon} ou un {q mauvais} coefficient de correspondance ?
+        - À partir de quel pourcentage de correspondance un résultat est-il considéré comme fiable ?
+        - Une adresse peut être {i sans erreur} mais orthographiée différemment de la référence (abréviations, etc.). Il est donc normal d’obtenir des coefficients inférieurs à 100 % pour des adresses parfaitement structurées. Mais alors : {e 90 %} est-il fiable ? et {e 80 %} ? {e 60 %} ?
+        - Cela dépend du géocodeur et son mode de calcul de ce coefficient. Celui-ci ne se résume pas à la distance phonétique ou textuelle entre les adresses identifiées et recherchées car il faut tenir compte du poids des éléments : une erreur dans la ville compte davantage qu’une erreur dans la voie.
+        - Un géocodeur bien documenté doit préciser le seuil de confiance, par exemple {e 70 %}, en dessous duquel le résultat doit être interprété comme une {i proposition de résultat}. Pour une meilleure compréhension du taux, il est utile de tester méthodiquement le géocodeur avec différentes adresses de qualités diverses.
+
+  div.grey
+    section
+      h2 Conclusion
+      - Si le coefficient de correspondance est systématiquement retourné par les géocodeurs, sa signification n’est pas toujours documentée, laissant deviner le seuil de confiance nécessaire en fonction de l’application.
+      - Les informations sur la précision du point combinent une donnée qualitative (méthode de positionnement) et quantitative (précision géométrique en mètres), très importantes étant donné l’hétérogénéité de la donnée Adresse en général. Cette information n’est généralement pas retournée dans le résultat des requêtes, ce qui empêche certaines exploitation de géocodage.

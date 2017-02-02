@@ -1,0 +1,54 @@
+page
+  .titre = Accueil
+
+  h1#top-title Une méthodologie collaborative et transparente
+    //- span.sub Enquête, groupe de travail,
+    //- span.sub Enquête publique → groupe de travail standardisation → programme de tests automatisés
+  //- Démarche collaborative
+  //- Un projet fondé sur la collaboration
+
+  section
+    //- h2 Feuille de route
+    //- h2 Mieux satisfaire aux besoins des administrations : une feuille de route en 5 étapes
+    - Pour assurer l’exhaustivité des besoins étudiés, tirer profit des expériences et faciliter la réutilisation des travaux, la démarche se veut :
+    --
+     - {b ouverte} à tous les acteurs et utilisateurs de géocodage, suivant les principes de la concertation publique ;
+     - {b transparente} au niveau des contenus et codes logiciels, suivant les principes du logiciel libre.
+
+    - La feuille de route s’établit en quelques étapes, sachant qu’une certaine agilité est requise sous la forme d’aller-retours non-linéaires entre la compréhension des besoins, les spécifications, le développement des tests et la faisabilité technique au regard de l’existant.
+
+  div.grey
+   section
+    h2 Les étapes de la feuille de route
+
+    section
+      h3 {span.num 1} Diagnostic des usages
+      - Le diagnostic permet de constater l’existant par une connaissance fine de la façon dont les administrations font du géocodage aujourd’hui : outils logiciels, bases de données, contexte opérationnel. Les insatisfactions sont recensées et priorisées.
+      - Cette phase se déroule par le biais d’une enquête, d’interviews et d’échanges coordonnés par l’animateur de la plateforme.
+
+    section
+      h3 {span.num 2} Formalisation des spécifications
+      - Le document de spécifications synthétise le comportement attendu d’un service de géocodage. Établi sur la base du diagnostic des usages, il en traduit les nécessité sous forme de prescriptions fonctionnelles et techniques organisées en 3 ensembles que sont :
+      --
+       - les adresses en entrée et le niveau d’exigence/tolérance vis-à-vis de leur conformité à la norme postale ou administrative ;
+       - le référentiel Adresse jugé nécessaire à la qualité du service, en lien avec le projet BAN ;
+       - les aptitudes du {i moteur de recherche d’adresse} à apparier l’adresse littérale de l’adresse référencée, compte-tenu de son interface et ses performances.
+
+    section
+      h3 {span.num 3} Développement de tests automatisés
+      - Le document de spécifications se traduit en logiciel de test qui opère sur des fichiers CSV contenants des échantillons d’adresses : les {i batteries de tests}. L’exécution automatique de ces tests permet de vérifier la conformité d’un service de géocodage aux différentes spécifications.
+      - Les tests vérifient différents aspects, notamment :
+      --
+       - la qualité du référentiel Adresse, en testant la présence d’une certain nombre d’adresses (en agglomération, hors-agglomération, lieux-dits, adresses CEDEX, communes anciennes et nouvelles...).
+       - la qualité du moteur de rapprochement : orthographes alternatives, fautes d’orthographes, adresses incomplètes ou potentiellement ambigues...
+      - Les tests automatisés sont constitué d’un programme exécutable et de jeux de données constituant les tests proprement dits. Codes sources et données sont accessibles sur un dépôt GitHub.
+      - Par rapport aux spécifications, la valeur de ces tests réside dans leur opérationnalité : chaque acteur peut s’en servir pour faire ses propres évaluations et cahiers de recette lors d’une acquisition ou d’un développement.
+      //- protocole de test... benchmarking...
+
+    section
+      h3 {span.num 4} Audit des solutions du marché
+      - Une fois les tests achevés, ils sont mis en œuvre pour évaluer les principales solutions de géocodage du marché. Les résultats sont publiés sur la plateforme pour qualifier les forces et faiblesse de chaque solution dans une optique de connaissance et d’évolution.
+
+    //- section
+    //-   h3 {span.num 5} Prescription des offres de géocodage conformes aux attentes de l’Etat
+    //-   - Cette étape n’est pas encore déterminée avec précision

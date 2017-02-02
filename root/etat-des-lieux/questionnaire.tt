@@ -1,0 +1,74 @@
+page
+  .titre = Questionnaire-PNG
+
+  h1 Questionnaire sur les usages en géocodage
+    //- span.sub (en voie de finalisation)
+
+  section
+    - Ce questionnaire sert dans la phase du diagnostic de fil conducteur pour les enquêtes téléphonique et les rendez-vous.
+    //- - Un sondage Internet sera publié prochainement.
+
+    h3 Tous les retours d’expériences sont les bienvenus !
+    div.actions
+      ext.button(href=https://github.com/plateforme-nationale-geocodage/geocodage/issues/6) Répondre aux questions sur GitHub {small connexion nécessaire}
+    - Vous préférez vous exprimer par email ? C’est possible : prenez
+      a.button(href=/contact/) Contact avec l’animateur
+    - Le questionnaire peut être téléchargé au {a.button(href=questionnaire.odt) format OpenDocument} et au {a.button(href=questionnaire.doc) format Word}
+    //- big
+    //- -0
+    //-  - Copiez-collez les questions ci-dessous dans un email
+    //-  - Insérez vos réponses entre les questions
+    //-  - Envoyez l’email à {e {b diagnostic@plateforme-nationale-geocodage.fr}}. Merci !
+
+
+  div.grey
+    section
+      h2 Questions / fil conducteur
+      section
+        h3 Besoins métiers
+        --
+         - Dans quels contexte métier réalisez-vous des géocodages ?
+         - Utilisez-vous du géocodage unitaire ?
+         - Utilisez-vous du géocodage de masse (fichier CSV) ?
+         - Utilisez-vous du géocodage intégré à votre applicatif ?
+         - Quel service de géocodage utilisez-vous ?
+
+      section
+        h3 Géocodage interne
+        --
+         - Est-ce un solution {q maison} ou sur étagère ? laquelle ?
+         - Solution maison : quelles sont les technologies employées ?
+         - Quel référentiel adresse le géocodeur exploite-t-il ?
+         - Quel âge a ce référentiel ?
+         - Est-il complété par d’autres jeux de données ?
+         - Envisagez-vous des évolutions ?
+
+      section
+        h3 Adresses en entrée
+        --
+         - D’où proviennent les adresses en entrée (formulaire web, papier, BDD, SI...) ?
+         - De quels types d’adresse s’agit-il ?
+         - Comment se structurent-elles, en quels champs (numéro/voie, code INSEE, code postal, champ unique...) ?
+         - Quel est le le volume de données ou la fréquence du flux ?
+         - Les adresses sont-elles restreintes à un territoire ?
+         - Quelle est la qualité des adresse (proportion d’adresses incomplètes, erronées...) ?
+         - Des CEDEX ou CIDEX sont-ils présents dans les adresses ?
+         - Si oui : causent-ils des difficultés de géocodage ?
+         - Des boîtes postales (BP) sont-elle présentes ?
+         - Un lieu-dit est-il parfois présent entre la voie et la commune ?
+
+      section
+        h3 Exploitation
+        --
+         - Quelles sont les informations récupérées, outre les coordonnées (adresse formatée, altitude, parcelle...) ?
+         - Quel est le taux de réussite ?
+         - Quel impact une erreur de géocodage peut-elle avoir sur votre métier ?
+         - Comment les résultats sont-ils exploités ?
+         - Sont-ils appariés avec d’autres données ?
+         - Quels sont les principaux problèmes que vous rencontrez dans le géocodage ?
+
+      section
+        h3 Pour approfondir
+        --
+         - Souhaitez-vous que l’animateur de la plateforme vous appelle au téléphone ?
+         - Souhaitez-vous rencontrer l’animateur de la plateforme ?

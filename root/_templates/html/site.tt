@@ -1,0 +1,136 @@
+:var png_path_carte = "/outils/carte/"
+
+:on nav-png
+  nav
+   div.nav-container.stopf
+    a.marianne.href=/
+      img.alt=Accueil.height=120
+         .src = /assets/img/meem.jpg
+         .alt = Un projet porté par le ministère de l’écologie, de l’énergie et de la mer
+         //- .src = /assets/img/ign.png
+    h1 Plateforme Nationale de Géocodage
+    --
+     :var RUBRIQUE = REQUEST.path.current[0]
+     -
+       a.href=/
+         :if RUBRIQUE == "_index"
+           :attr.class = "active"
+         | Projet
+     -
+       a.href=/contexte/
+         :if RUBRIQUE == "contexte"
+           :attr.class = "active"
+         | Contexte
+     -
+       a.href=/participants/
+         :if RUBRIQUE == "participants"
+           :attr.class = "active"
+         | Participants
+     //- -
+     //-   a.href=/methodologie/
+     //-     :if RUBRIQUE == "methodologie"
+     //-       :attr.class = "active"
+     //-     | Méthodologie
+     -
+       a.href=/outils/
+         :if RUBRIQUE == "outils"
+           :attr.class = "active"
+         | Outils
+     -
+       a.href=/etat-des-lieux/
+         :if RUBRIQUE == "etat-des-lieux"
+           :attr.class = "active"
+         | État des lieux
+     -
+       a.href=/specs/
+         :if RUBRIQUE == "specs"
+           :attr.class = "active"
+         | Spécifications
+     -
+       a.href=/tests/
+         :if RUBRIQUE == "tests"
+           :attr.class = "active"
+         | Évaluation
+     //- -
+     //-   a.href=/contribuer/
+     //-     :if RUBRIQUE ==  "contribuer"
+     //-       :attr.class = "active"
+     //-     | Contribuer
+     //- -
+     //-   a.href=/projet/
+     //-     :if RUBRIQUE == "projet"
+     //-       :attr.class = "active"
+     //-     | Le projet
+
+:on foot-png
+
+  :var RUBRIQUE = REQUEST.path.current[0]
+  :if RUBRIQUE != "_index"
+    div.actions
+      a.button
+        .href = ../
+        |Retour
+
+  :var issueId = page.attributes["github-issue"]
+  :if 0 && issueId
+    :var comments = requestHttpJson(github_api_issues_url+"/"+issueId+"/comments")
+    section
+      h2 Commentaires
+      :if !comments.length
+        - (aucun)
+      :each comment in comments
+        div.comment
+
+          div.icon
+            ext
+              :attr.href = comment.user.html_url
+              img.width=60
+                :attr.src = comment.user.avatar_url
+              br
+              span.author
+                :process comment.user.login
+          p
+            .style = whitespace:pre
+            :process comment.body
+
+      div.actions
+        a.button
+          :attr.href = "https://github.com/"+png_github_repository+"/issues/"+issueId
+          |Écrire un commentaire (via GitHub.com)
+
+  //- footer
+   //- div.about
+   //-   h2 À propos
+   //-   - Site web développé par l’Institut National de l’Information Géographique et Forestière (IGN).
+     //- -
+     //-   a.target=_blank
+     //-     :attr.href = "https://github.com/jfgigand/geocodage/tree/textree/root/" + REQUEST.path.routePath
+     //-     | Code source de cette page sur GitHub
+
+   //- div.links
+   //-  --
+   //-   - © IGN 2016
+   //-   | |
+   //-   -
+   //-     ext
+   //-       .href=http://www.ign.fr/
+   //-       | Portail IGN
+   //-   | |
+   //-   -
+   //-     ext.href=/legal/ Mentions légales
+
+:var png_github_repository = "plateforme-nationale-geocodage/geocodage"
+:var png_url_issues = "https://github.com/"+png_github_repository+"/issues"
+:var github_api_issues_url = "https://api.github.com/repos/"+png_github_repository+"/issues"
+
+:on espace-echange (node)
+  a.ext.target=_blank
+    :.href = png_url_issues
+    :process node.children
+    :if !node.children.count
+      | l’espace d’échange
+
+:on intro
+  section.intro
+    //- h2 Introduction
+    :process intro.children

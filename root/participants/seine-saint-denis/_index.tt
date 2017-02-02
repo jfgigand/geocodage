@@ -1,0 +1,34 @@
+page
+  .titre = Saine-Saint-Denis
+
+  h1 Département de la Seine-Saint-Denis
+    span.sub Interview de David Delhorme
+
+  interview
+
+    intro
+      img.floatr
+        .src = ../saine-saint-denis.png
+      - David Delhorme est géomaticien au département de Seine-Saint-Denis (CD93). Dans cette courte interview, il nous fait part de son expérience de géocodage pour les besoins du département, ainsi que de développeur d’un frontal web interne de géocodage de masse avec correction d’erreur.
+
+    question Quel type de géocodage pratiquez-vous ?
+    reponse
+      - Au département de la Seine-Saint-Denis nous avons un besoin régulier de géocodage de fichiers contenant des adresses.
+      - Ces fichiers tableurs sont issus le plus souvent de nos Directions métiers, et nous les rendons géographiques pour les proposer sur notre plateforme géographiqe {ext(href=http://geoportail93.fr) Géoportail93}.
+      - Pour ce faire, nous avons développer un outil de géocodage directement intégré sur notre portail cartographique qui permet d’importer un fichier CSV, de sélectionner les champs composant l’adresse compléte (n°+typede voie+nom de la voie+code ville INSEE/postal), de le géocoder et de visualiser le résultat directement sur l’interface cartographique.
+
+    question Quels sont les référentiels utilisés ?
+    reponse
+      - Notre géocodeur utilise 5 référentiels adresses : BD Adresse, RIL INSEE, BAN, BANO et Cadastre DGFIP. Une adresse est donc géocodée 5 fois avec chacun de ces référentiels ; le référentiel avec le meilleur géocodage est proposé comme résultat.
+      - Un outil de correction interactif permet de vérifier le positionnement des résultats et de corriger les adresses mal géocodées pour les re-géocoder.
+
+    question Avez-vous des cas particuliers mal traités (CEDEX, lieux-dits...) ?
+    reponse
+      - Les adresses que nous utilisont se limitent le plus souvent à la Seine-Saint-Denis, ne comportent pas de CEDEX, ni de lieux-dits, exceptées quelques adresses {q La Plaine Saint-Denis} (commune de Saint-Denis).
+
+    question Quelles sont les limites de votre solution ? À quelles autres solutions faites-vous appel ?
+    reponse
+      - Notre solution est satisfaisante pour de petits jeux de données (inférieur à 3000 lignes), au delà, le temps nécessaire explose dû au 5 processus de géocodage par adresse. La précision du géocodage était prioritaire sur le délai de traitement. Pour les gros jeux de données, nous utilisons le géocodeur de adresse.data.gouv.fr
+
+    conclusion
+      - Propos recueillis le 29 novembre 2016

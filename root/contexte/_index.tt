@@ -1,0 +1,182 @@
+page
+  .titre = Contexte du projet
+
+  h1 Raisons et acteurs du projet
+
+
+  section
+    h2 L’existant : un besoin général de mutualisation et de qualification
+
+    section
+      h3 Géocodages ad-hocs
+      - Le géocodage ad-hoc est celui que l’on met en œuvre {i en interne} pour sa propre structure, par opposition à un service qualifié et commercialisé par un prestataire dans le cadre d’une garantie de service. Cette configuration se rencontre le plus souvent dans les structures disposant d’une cellule géomatique et d’un système d’information géographique (SIG). Le défi principal est l’accès à un référentiel adresse suffisant, c’est pourquoi le géocodage ad-hoc concerne principalement les collectivités et administrations possédant déjà ces données, soit par leur mission, soit par acquisition, notamment de la BD Adresse de l’IGN.
+      - Il est alors {i tentant} de vouloir capitaliser sur le référentiel de données acquis en mettant en œuvre un moteur de géocodage fourni (solution ESRI par exemple) ou développé en interne.
+
+      - Les limitations sont de 2 ordres :
+      --
+       - les {b données} ne restent pas facilement à jour, principalement à cause de la complexité de l’intégration entre les différentes bases de données nécessaires (adresses, lieux-dits, communes, codes postaux) ;
+       - les {b outils} sont parfois développés en interne avec le postulat que le géocodage est un {q simple} moteur de recherche d’adresses, quand le sujet se révèle en fait plus complexe.
+
+
+    section
+      h3 Le géocodage à l’IGN
+      - L’IGN gère un service de géocodage basé sur une solution {i GeoConcept} et reposant sur la {i BD Adresse}, la {i BD Topo} et d’autres données comme la base des codes postaux. Ce service alimente tous les géocodages de l’IGN :
+      --
+       - recherche d’adresses et de lieux-dits dans le {ext(href=http://geoportail.gouv.fr/) Géoportail} ;
+       - applications {ext(href=https://mesadresses.ign.fr/) Mes Adresses} et {ext(href=http://professionnels.ign.fr/geocodeurs#tab-2) Mon Géocodeur}
+       - {ext(href=http://api.ign.fr/tech-docs-js/fr/developpeur/search.html) API de géocodage au standard {i OpenLS}}
+       - prestations de géocodage
+      - Outre certaines limitations constatées (performances, signification du score, prise en compte des CEDEX...), il y a 2 points fondammentaux nécessitant la refondation du moteur de géocodage :
+      --
+       - l’opacité du moteur, ayant ses propre limitations sur lesquelles on ne peut agir (logiciel propriétaire) ;
+       - l’alimentation par la Base Adresse Nationale (BAN) au lieu de la BD Adresse pour une meilleure actualité des données.
+
+    section
+      h3 API commerciales
+      - Les interfaces programmatiques (API) commerciales telles que {i Google Maps}, {i HERE} ou {i MapQuest} peuvent offrir d’excellents résultats mais la composition du référentiel d’adresses n’est généralement pas documentée. Comment savoir, par exemple, si Google intègre la situation nouvelle des communes françaises depuis les fusions opérées au 1{sup er} janvier 2016 ?
+      - En outre, la dépendance numérique des services publics français à des prestataires étrangers doit être rigoureusement contrôlée, sinon évitée car il s’agit de dépendance {i permanente}.
+
+  div.grey
+   section
+    h2 L’arrivée de la Base Adresse Nationale (BAN)
+
+    section
+      h3 Le nouveau référentiel national
+      - Fruit d’un partenariat entre l’IGN, La Poste, le SGMAP et OpenStreetMap France, la {ext(href=http://adresse.data.gouv.fr/) BAN} a pour but de référencer l’intégralité des adresses du territoire français dans une base de données réutilisable gratuitement ({ext(href=http://adresse.data.gouv.fr/faq/) sous conditions}). Elle permet, entre autres applications, le géocodage.
+
+    section
+      h3 Addok, le {i géocodeur de la BAN}
+      - La {ext(href=https://www.etalab.gouv.fr/) mission Etalab}, en charge du développement du site {ext(href=http://adresse.data.gouv.fr/) {e adresse.data.gouv.fr}}, a développé un moteur libre de géocodage nommé {i Addok}, se présentant comme le {i moteur de recherche de la BAN}.
+
+      - Impulsé comme une {i preuve de concept}, la solution a rapidement gagné en maturité jusqu’à se positionner comme le {i service de géocodage de la BAN}, proposé en hébergement par la mission Etalab et exploitable par interfaces interactives et programmatiques.
+
+      - Bien qu’il offre une bonne qualité, le service est proposé sans cadre contractuel ni garantie de service. Son statut dans le service public reste à préciser.
+
+      - En tant que logiciel libre, il peut être mis en œuvre par toute entité mais il ne faut pas sous-estimer la complexité d’un hébergement interne :
+      --
+       - besoins matériels pour héberger le service ;
+       - maintenance du service ;
+       - actualisation périodique des données ;
+       - mise-à-jour du logiciel, dont alertes de sécurité.
+
+      - La question de la compétence en géocodage pour les administrations reste ainsi entière. Le besoin de clarifier les attentes dans leur détails opérationnels et d’évaluer la qualité des outils {b dans la durée} demeure également, à plus forte raison si l’on souhaite pleinement tirer profit de la BAN et de l’outil {i Addok}.
+
+  section
+    h2 Innovation dans la méthode
+
+    section
+      h3 Une démarche transversale portée par un acteur légitime
+      - Face aux constats exposés précédemment, l’IGN a pris l’initiative de proposer au Programme d’Investissements d’Avenir (PIA) le projet {q Plateforme Nationale de Géocodage}. Porté par le Ministère de l’environnement, de l’énergie et de la mer, ce projet se situe en amont des services concernés : diagnostiquer les usages, relever les manques, élaborer des spécifications consensuelles et proposer un protocole d’évaluation des services.
+      - Le géocodage est dans les sciences géographiques une fonction éminemment transversale à de nombreux métiers et usages. Combinaison d’un logiciel et d’une base de données, la fonction géocodage dépend d’une expertise dans les domaines informatique et géomatique réunis.
+      - C’est pourquoi la démarche échappe au balisage des structures de gouvernance disciplinaires traditionnels, pour évoluer de façon transversale et couvrir le sujet sans les zones d’ombre {i fatales} aux découpages sectoriels habituels.
+
+
+    section
+      h3 La qualité par le consensus
+      - La démarche rassemble le plus grand nombre d’acteurs et utilisateurs publics, compte-tenu des moyens disponibles, pour travailler ensemble sur ce sujet spécifique.
+      - De l’ampleur de ce rassemblement dépend la valeur des spécifications qui seront publiées. Elles se nourissent des contributions, les plus représentatives possibles des usages à satisfaire.
+      //- --.spaced
+      //-  - les spécifications
+      //-  //- des contributions représentatives des nombreux contextes d’utilisation en font l’efficacité opérationnelle ;
+      //-  - les livrables profitent à tous les adhérents et permettent
+      //-  - une meilleure interopérabilité grâce à l’adhésion de plus grand nombre au consensus
+      //-  //- le consensus issu de participations réparties sur le territoire en fait le poids et la confiance.
+
+    //- section
+    //-   h3 Caractère public et dimension nationale
+
+  div.grey
+   section.acteurs
+    h2 Les acteurs du projet
+
+    section
+      ext
+        .href = http://www.developpement-durable.gouv.fr/
+        img.width=80
+          .src = /assets/img/meem.jpg
+          .alt = MEEM
+      div
+        h3
+          ext
+            .href = http://www.developpement-durable.gouv.fr/
+            |Ministère de l’environnement, de l’énergie et de la mer
+          | : porteur du projet
+        - Le ministre de l’environnement, de l’énergie et de la mer, chargé des relations internationales sur le climat prépare et met en œuvre la politique du Gouvernement dans les domaines du développement durable, de l’environnement et des technologies vertes, de la transition énergétique et de l’énergie, notamment en matière tarifaire, du climat, de la prévention des risques naturels et technologiques, de la sécurité industrielle, des transports et de leurs infrastructures, de l’équipement, de la mer, à l’exception de la construction et de la réparation navales, ainsi que dans les domaines des pêches maritimes et de l’aquaculture.
+        - Il élabore et met en œuvre la politique de lutte contre le réchauffement climatique et la pollution atmosphérique. Il promeut une gestion durable des ressources rares.
+        - Il est chargé des relations internationales sur le climat. A ce titre, il conduit les négociations européennes et internationales sur le climat et veille à la mise en œuvre des accords conclus, en concertation avec le ministre des affaires étrangères et du développement international.
+        - Il participe à l’élaboration des programmes de recherche concernant ses attributions.
+
+    section
+      ext
+        .href = http://www.ign.fr/
+        img.width=80
+          .src = /assets/img/ign.png
+          .alt = IGN
+      div
+        h3
+          ext
+            .href = http://www.ign.fr/
+            |Institut national de l’information géographique et forestière (IGN)
+          | : porteur opérationnel du projet
+        - L’IGN est l’opérateur de l’Etat en matière d’information géographique et forestière de référence, certifiée neutre et interopérable. L’Institut développe en permanence de nouveaux référentiels, produits et géoservices, répondant aux besoins croissants et évolutifs en données cartographiques et en informations géolocalisées. Puissant acteur public du numérique pour la description multi-thèmes du territoire, l’Institut intervient en appui à l’évaluation et à la mise en œuvre des politiques publiques de prévention des risques, d’aménagement du territoire, de développement durable, de défense et de sécurité. Grâce à ses cinq laboratoires de recherche, l’IGN entretient un potentiel d’innovation de haut niveau dans les domaines de la géodésie, de la topographie vectorielle, de l’optique et de l’électronique, du traitement des images et d’inventaire forestier.
+        - L’Institut national de l’information géographique et forestière (IGN) est placé sous la double tutelle de la ministre de l’environnement, de l’énergie et de la mer et du ministre de l’agriculture, de l’agroalimentaire et de la forêt.
+
+    section
+      ext
+        .href = http://modernisation.gouv.fr/
+        img.width=80
+          .src = /assets/img/sgmap.png
+          .alt = SGMAP
+      div
+        h3
+          ext
+            .href = http://modernisation.gouv.fr/
+            |Secrétariat général pour la modernisation de l’action Publique (SGMAP)
+          | : contributeur au suivi technique et financier du projet
+        // http://www.modernisation.gouv.fr/le-sgmap/missions/missions-du-sgmap
+        - Le secrétariat général pour la modernisation de l’action publique (SGMAP) est un service du Premier ministre qui accompagne le Gouvernement dans la mise en œuvre de la réforme de l’État et soutient les administrations dans leurs projets de modernisation. Il encourage les acteurs publics à s’approprier de nouvelles manières de concevoir et mener les politiques publiques. Avec le citoyen au centre de tous ses objectifs et de ses méthodes, le SGMAP œuvre pour une action publique plus performante. Il développe et diffuse le numérique au sein de l’administration pour ajuster les services aux besoins et aux usages des citoyens.
+
+    section
+      ext
+        .href = http://www.caissedesdepots.fr/
+        img.width=80
+          .src = /assets/img/caisse-des-depots.png
+          .alt = Groupe Caisse des dépôts et consignations
+      div
+        h3
+          ext
+            .href = http://www.caissedesdepots.fr/
+            |Caisse des dépôts et consignations (CDC)
+          | : gestion administrative et financière du fonds {q Transition numérique de l’Etat et modernisation de l’action publique}
+
+        - La Caisse des dépôts et consignations (CDC), parfois simplement appelée Caisse des dépôts, est une institution financière publique française créée en 1816.
+
+        - Placée sous le contrôle direct d’une commission de surveillance rendant compte au Parlement, elle exerce des activités d’intérêt général pour le compte de l’État et des collectivités territoriales ainsi que des activités concurrentielles.
+
+        h4 Le Programme d’Investissements d’Avenir (PIA)
+
+        ext.floatl.spaced
+          .href = http://www.enseignementsup-recherche.gouv.fr/cid55892/comprendre-le-programme-investissements-d-avenir.html/
+          img.width=80
+            .src = /assets/img/pia.png
+            .alt = PIA
+
+        - Doté de près de 47 milliards d’euros, le Programme d’Investissements d’Avenir (PIA), piloté par le commissariat général à l’Investissement, a été mis en place par l’Etat pour financer des investissements innovants et prometteurs sur le territoire, avec un principe de co-financement pour chaque projet.
+        - La gestion du PIA a été confiée à douze opérateurs, dont le groupe Caisse des Dépôts, qui gère ainsi 13,7 milliards d’euros déclinés en 36 conventions.
+        - La mise en œuvre du PIA implique la mobilisation de l’ensemble de la Caisse des Dépôts et de plusieurs directions de Bpifrance. Pour l’ensemble du groupe, le PIA est une opportunité permettant de mobiliser, selon une gouvernance spécifique, des montants très significatifs sur des interventions complémentaires de celles menées sur fonds propres sur des thématiques d’investissement prioritaires : investissement dans les petites et moyennes entreprises, économie de la connaissance, politique de la ville, économie sociale et solidaire, formation, économie numérique, développement territorial...
+
+    //- section
+    //-   ext
+    //-     .href = http://www.enseignementsup-recherche.gouv.fr/cid55892/comprendre-le-programme-investissements-d-avenir.html/
+    //-     img.width=80
+    //-       .src = /assets/img/pia.png
+    //-       .alt = PIA
+    //-   div
+    //-     h3
+    //-       ext
+    //-         .href = http://www.enseignementsup-recherche.gouv.fr/cid55892/comprendre-le-programme-investissements-d-avenir.html/
+    //-         |Programme d’investissements d’avenir (PIA)
+    //-       | : financeur
+    //-     - Ce programme, né du rapport « Juppé – Rocard » de 2009 est une démarche originale qui prépare la France aux défis de demain. Elle obéit à trois mots qui en font la marque : l’excellence, l’innovation et la coopération.
+    //-     - Excellence, parce que les universités, les instituts, les laboratoires, les équipes, les projets entrepreneuriaux et industriels sont choisis en fonction de leur excellence sur la base d’avis de jurys ou d’experts indépendants. Innovation, parce qu’il faut apporter quelque chose de nouveau pour bénéficier du PIA. Coopération, parce que nous voulons faire travailler ensemble ceux qui portent l’avenir de notre pays. 35 Md€ ont été déployés à partir de 2010, au bénéfice de l’enseignement supérieur, la recherche, la valorisation et l’innovation dans les secteurs stratégiques de l’économie française (Industrie, numérique, transport, énergie, santé). 12 Md€ ont renforcé cette dynamique à partir de 2014.
+    //-     - Les 10 Md€ annoncés par le Président de la République pour un troisième Programme d’investissements d’avenir, amplifient l’ambition initiale et répondent à trois priorités : soutenir les progrès de l’enseignement et la recherche, valoriser la recherche et accélérer la modernisation des entreprises.

@@ -1,0 +1,15 @@
+//------------------------------------------------------------------------------
+//-- Fichier racine
+//------------------------------------------------------------------------------
+
+//- Référencement des templates contenus dans le répertoire _templates/
+
+:process.ParseTextree
+  :process.ReadFile
+    fs:glob _templates/*.tt
+
+
+
+//- Routage de la requête vers la bonne page
+
+:process-next-route

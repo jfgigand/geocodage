@@ -1,0 +1,69 @@
+:process.ParseTextree
+  :process.ReadFile
+    fs:glob etat-des-lieux/solutions/_index.templates.tt
+
+page
+  .titre = Solutions-État des lieux
+  style.
+    h3 { margin: 0; }
+
+  h1 Les solutions de géocodage
+
+
+  solutions
+    .type = Moteurs indépendants du référentiel
+
+    solution
+      .titre = Addok
+      .url = https://github.com/addok/addok
+
+    solution
+      .titre = JdonRef
+      .url = https://adullact.net/plugins/mediawiki/wiki/jdonref-v2/index.php/JDONREFv4_Plugin
+
+    solution
+      .titre = HYDRE
+
+    solution
+      .titre = Nominatim
+
+
+    //- solution
+    //-   .titre = Hydre
+
+    solution
+      .titre = GeoConcept Universal Geocoder
+      .url = http://fr.geoconcept.com/entreprise/geocodage-d-adresses-presentation
+
+    solution
+      .titre = ESRI World geocoding service
+      .url = https://developers.arcgis.com/features/geocoding/
+
+    solution
+      .titre = Pitney Bowes Universal Geocoder
+      .url = http://www.pitneybowes.com/us/location-intelligence/geocoding-data-enrichment/spectrum-enterprise-geocoding-module.html
+      --
+       -
+         ext
+           .href = http://www.pitneybowes.fr/docs/International/France/PDF/Software/Offre-de-Donnees/2010%2007%20GEOCODEUR%20UNIVERSEL%20Fiche%20Produit%20Version%20Finale.pdf
+           | Fiche produit
+
+  div.grey
+   solutions
+    .type = Services cloud
+
+    solution
+      .titre = Google
+      .url = https://developers.google.com/maps/documentation/geocoding/
+
+    solution
+      .titre = Bing Location API services
+      .url = https://msdn.microsoft.com/en-us/library/ff701715.aspx
+
+    solution
+      .titre = MapQuest
+      .url = https://www.mapquestapi.com/geocoding/
+
+    solution
+      .titre = Géoportail IGN
+      .url = http://api.ign.fr/tech-docs-js/fr/developpeur/search.html

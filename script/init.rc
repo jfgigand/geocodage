@@ -1,0 +1,36 @@
+# Common init code for scripts                 -*- shell-script -*-
+
+_init() {
+    script_dir=$(dirname $(readlink -f $0))
+    settings_file="$script_dir/settings.rc"
+
+    if ! [ -r $settings_file ]; then
+        echo "file not found or not readable: $settings_file"
+        exit 1
+    fi
+
+    . $settings_file
+
+    benchmark_dir=root/benchmark/
+
+    if ! [ -d $benchmark_dir ]; then
+        echo "Working directory should be the textree repository root, benchmark dir is not found: $benchmark_dir"
+        exit 1
+    fi
+    cd $benchmark_dir
+}
+_psql() {
+    _args=("--host=$PSQL_HOST" "--port=$PSQL_PORT" "--username=$PSQL_USER" "--dbname=$PSQL_DATABASE" --pset=tuples_only=on --pset=format=unaligned)
+    # echo "$@" >&2
+    # echo Command line: psql "${_args[@]}" >&2
+    echo "$@" | psql "${_args[@]}" | grep .
+    # "${args[@]}"
+
+    _status=${PIPESTATUS[1]}
+    if [ $_status -ne 0 ]; then
+        echo "psql failed with status $_status" >&2
+        exit 1
+    fi
+}
+
+_init

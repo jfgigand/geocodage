@@ -1,0 +1,348 @@
+page
+  .titre = Structuration de la qualité d’un géocodage
+  .github-issue = 9
+
+  h1 Qualité d’un géocodage
+    span.sub Comment distinguer les composants de la qualité globale ?
+
+  //----------------------------------------------------------------------------
+  section
+    h2 Quels {i ingrédients} sont nécessaires au bon fonctionnement d’un géocodage ?
+
+    h3 Géocodage = rapprochement entre une recherche et une base de données d’adresses
+
+    div.center
+      img.width=600
+        .src = rapprochement.svg
+        .alt = Le moteur de rapprochement s’appuie sur la base d’adresses de référence pour géocoder l’adresse soumise en entrée.
+
+    - Un service de géocodage repose sur une base d’adresses de référence : c’est un moteur de recherche qui va tenter d’apparier l’adresse recherchée aux adresses référencées dans la base de référence.
+
+    - Nous analyserons ici les constituant de la qualité, répartis dans ces 3 domaines. Ces analyses serviront de base à la formalisation d’indicateurs de qualité pouvant être évalués à travers des tests automatisés.
+
+    - Il existe trois modes de géocodage d’adresses : le géocodage unitaire, l’auto-complétion d’adresses et le géocodage de masse ; ainsi que deux types d’interfaces d’utilisation : programmatique (API) et interactive. Cette analyse ne fait pas cas de ces distinctions en les englobant toutes afin de retenir ce qui fait la qualité du géocodage en général.
+
+  //----------------------------------------------------------------------------
+
+  div.grey
+   section
+    h2 La qualité de l’adresse en entrée
+    - Bien entendu, une adresse invalide n’est pas censée être {i géocodable}. Trouver la localisation physique d’une adresse suppose que le lieu existe sur le territoire.
+    - Mais qu’est-ce qu’une adresse valide ? On distinguera l’existence de l’adresse en tant que lieu et la validité du formattage de cette adresse, c’est-à-dire la façon de l’écrire.
+
+
+    section
+      h3 Une adresse {i géographiquement} valide
+
+      - L’adresse que l’on souhaite géocoder désigne nécessairement un lieu géographique, dont on cherche à obtenir les coordonnées. On exclut pour l’instant des localisants territoriaux surfaciques (tels qu’une commune ou un département en soi) pour se focaliser sur les {i points adresses} localisés par un point géographique précis à l’échelle de la rue.
+
+      - La norme en vigueur est celle de l’adresse géo-postale, désignant le lieu à travers une commune, un lieu-dit, une voie et un numéro de voie. Sont exclues les adresses postales non-géographique, c’est-à-dire les adresses avec un libellé d’acheminement en CEDEX et une boîte postale ne permettant pas d’établir la localisation géographique.
+
+      - Une adresse en CEDEX n’est pas nécessairement non-géographique : si la voie est spécifiée et la commune unique en France, elle est géocodable. Le code postal est quant à lui dans une zone grise, appartenant à la norme postale mais correspondant à une zone géographique : ses premiers chiffres, en tout cas, correspondent rigoureusement au département afin d’identifier la commune de façon unique en France.
+
+      - Le sujet n’est pas trivial : dans l’absolu, une adresse non-géographique est une adresse permettant l’acheminement de courrier mais totalement dissocié de tout concept de lieu. Au contraire, si la difficulté est causée par la désignation postale de l’adresse, alors c’est une limitation du référentiel de données exploitables.
+
+      div.actions
+        //- a.button.href=201609-adresses-geographiques-et-postales/ Article détaillé : adresses géographiques et postales
+
+      //- style.type=text/css.
+      //-   .adr-geo { background: #afa; }
+      //-   .adr-postal { background: #faa; }
+
+      //- - Voici, par exemple, une adresse géo-postale (les éléments graphiques sont en {span.adr-geo vert} et les éléments posatux en {span.adr-postal rouge}) :
+      //- pre
+      //-   span.adr-geo 6 et 8 Avenue Blaise Pascal
+      //-   span.adr-geo Cité Descartes
+      //-   span.adr-geo Champs-sur-Marne
+      //-   span.adr-postal 77455 Marne la Vallée
+      //-   span.adr-postal Cedex 2
+
+
+    section
+      h3 Conformité du formattage
+
+      h4 Formatage postal
+      - La norme AFNOR XPZ 10-011 définit le formattage des adresses postales en 6 lignes (7 avec le pays) :
+      -0
+       - identité du destinataire
+       - complément d’identification du destinataire ou du point de remise
+       - complément d’identification du point géographique
+       - n° et libellé de voie
+       - lieu-dit ou commune d’implantation ou service particulier de distribution
+       - code postal et libellé de destination
+
+      - Seules les lignes 3 à 6 sont à spécifier pour le géocodage. Les lignes précédentes peuvent être tolérées ou non.
+
+      h4 Adresse sur une ligne
+      - Lorsque l’adresse est écrite dans un champ de recherche, on peut séparer ou non les {q lignes} par des virgules.
+      - Il faut, en principe, respecter l’ordre des composants de l’adresse pour lever toute ambiguité, par exemple :
+      --
+       - entre {adr rue de Paris} à Saint-Mandé et {adr rue de Saint-Mandé} à Paris ;
+       - entre la commune et le lieu-dit ;
+       - entre le code postal et le numéro de rue, potentiellement grand en cas de numéro métrique.
+
+      h4 Adresses à la norme administrative
+      - Le lieu est désigné en formule libre et naturelle, comme : {q L’IGN est situé au 73 avenue de Paris à Saint-Mandé (Val-de-Marne)}.
+      - Cette notation notamment utilisée dans les textes légaux, où la désignation d’un lieu ne peut dépendre du référentiel postal, qui n’est pas contrôlé par le législateur. Elle doit s’appuyer sur les structures administratives : numéro et voie (issus d’un arrêté municipal), commune et département (décidés par le Conseil d’Etat). La désignation du département (nom ou code) est nécessaire pour lever toute embiguité sur le nom de la commune.
+      - La structuration minimale mais non-ambigue d’une adresse se fait ainsi :
+      --
+       - nom du lieu dans la commune (numéro et voie ou lieu-dit ou tout autre localisation unique dans la commune)
+       - commune dans le département
+       - département (en France)
+
+
+    section
+      h3 Exactitude
+
+      h4 Tolérance aux orthographes alternatives et fautes d’orthographe
+      - Si pour une commune, un lieu-dit ou une voie, il existe une orthographe officielle, plusieurs variantes peuvent néanmoins s’écrire. Par exemple :
+      --
+       - {adr la Ferté-Alais} / {adr la Ferté Alais}
+       - {adr St-Rémy-lès-Chevreuse} / {adr Saint-Rémy-lès-Chevreuse}
+       - {adr avenue Charles de Gaulle} / {adr avenue du Général de Gaulle}
+      - Dans ce cas, il y a plusieurs orthographes {i valides}, dont l’une est la référence officielle.
+      - On peut exiger que le service de géocodage {i tolère} des fautes d’orthographe mineures qui ne nuisent aucunement à l’information, comme oublier un {s s} en fin de mot ou omettre une lettre doublée. Par exemple :
+      --
+       - {adr la Ferté-Alais} / {adr la Ferté-Alai}
+       - {adr Alfortville} / {adr Alfortvile}
+      - Des fautes plus prononcées doivent-elles être tolérées ? Cela dépend de plusieurs choses :
+      --
+       - l’ambiguité potentielle de l’adresse recherchée, si celle-ci peut correspondre à de multiples résultats
+       - l’exigence portée sur la capacité du géocodeur à identifier l’adresse, basé sur un calcul de proximité textuelle et/ou sonore
+       - l’exactitude moyenne du jeu d’adresse à géocoder et le risque induit par les faux résultats
+
+      h4 Complétude de l’adresse
+      - Il existe 3 niveaux de complétude :
+      --
+       - la complétude de l’{b information}, correspondant aux adresses ne souffrant d’aucune ambiguité ni d’inexactitude, sans nécessairement respecter la norme ;
+       - la complétude de la {b norme} : administrative (lieu, commune, département) ou postale (lieu-dit, libellé d’acheminement) et respectant le libellé officiel de la voie, du lieu-dit et de la commune.
+       - la complétude du {b point géographique}
+      - Les adresses abrégées, par exemple {adr rue Baudelaire} au lieu de {adr rue Charles Baudelaire}, entrent dans la première catégorie car il ne s’agit pas de faute d’orthographe mais d’une omission de changeant pas l’information.
+      - Les adresses sans code postal (ni département) appartiennent également à la première catégorie seulement si la commune indiquée est unique en France. Si des communes de nom dérivé existent (comme entre {adr Paris} et {adr Paris-l’Hôpital} en Saône-et-Loire), on peut considérer que le cas est ambigu ou soumettre cette considération à l’exactitude de la correspondance des noms de voie.
+      - La complétude de la norme impose quant à elle le respect d’une structure bien définie, qu’il s’agisse d’un standard ou d’une structuration particulière (numéro, voie, commune, code département, etc.).
+      - La complétude du {i point géographique} se réfère à ce qu’une adresse est identifiée par un ponctuel désignant une ou plusieurs parcelles cadastrales possédant ce qu’on appelle administrativement une {i adresse}. Une recherche de nom de ville sera traitée différemment car il ne s’agit pas d’une adresse, mais d’un territoire administratif de niveau supérieur qui peut être identifié par un ponctuel (lieu de la mairie ou centroïde du polygone) ou par une surface. Il ne s’agit alors plus d’une {i adresse}, bien que le texte recherché puisse être exact et complet au niveau territorial.
+      //- - La question monte en pertinence à l’échelle de la rue : une adresse avec une voie sans numéro fait-elle une recherche valide ? L
+
+    //- section
+    //-   h3 Non-ambiguité de l’adresse
+
+
+  //----------------------------------------------------------------------------
+
+  section
+    h2 La qualité du référentiel d’adresses
+
+    - La base de données de référence est responsable d’une large part de la qualité d’un géocodage. Une adresse qui n’est n’y est pas présente ne peut pas être retournée par le moteur de géocodage.
+
+    - Un service de géocodage est ainsi jugé globalement sur sa capacité à géocoder des adresses valides. Il est ici nécessaire de distinguer la qualité de la base et l’aptitude du moteur à identifier les adresses de la base correspondant à la recherche.
+
+    section
+      h3 Exhaustivité horizontale : présence de toutes les adresses
+
+      - À l’évidence, le premier indicateur de qualité de la base de données d’adresses est son exhaustivité sur le territoire : toutes les adresses (déclarées par les municipalités) sont-elles présentes dans la base ?
+
+    section
+      h3 Actualité des données
+
+      - Les adresses naissent et meurent suivant le développement urbain : les changements sont validés par arrêté municipal. Au niveau national, il y a donc continuellement des changements, qui doivent être intégrés au référentiel d’adresses. Un service de géocodage fiable doit ainsi préciser la date d’actualité des données pour qu’une garantie d’{i exhaustivité} fasse sens.
+
+      - Par exemple, une nouvelle voie ne sera pas trouvée entre la date de l’arrêté municipal et son intégration dans le référentiel, sachant qu’une infrastructure technique et des processus métiers rationnalisent tout ceci avec les exigences de traçabilité. Les travaux menés dans le cadre du projet Base d’Adresses Nationale (BAN) visent à raccourcir ce délai encore davantage en organisant la remontée des changements dès le stade du projet d’aménagement urbain.
+
+      - L’actualité est un indicateur particulièrement pertinent car les adresses nouvellement créées sont plus fréquemment recherchées étant donnés les travaux de constructions et livraisons dus à l’aménagement. Les locaux étant nouveaux et les adresses peu encore connues, le géocodage est particulièrement important pour ces adresses.
+
+      h4 Continuité des adresses
+
+      - Il y a les adresses {i officielles}, qui évoluent de façon formelle, et les adresses d’{i usage}. Une adresse purement supprimées ne sera plus utilisée, en revanche une adresse qui change devra être présente dans la base à la fois sous sa forme nouvelle (actualité des données), mais aussi sous sa forme ancienne. Celle-ci perdure en effet à travers les fichiers d’adresses des entreprises et des particuliers, les supports de communication, etc.
+      - Autrement dit, une adresse ne doit pas, d’un jour à l’autre, {i disparaître} des résultats d’un géocodeur.
+      - On appelle {i changement d’adresse} la modification d’un ou plusieurs composants de l’adresse (voie, commune...) attaché à un point géographique inchangé.
+      //- - Les changement adresses peuvent également changer :
+      //- --
+      //-  - changement de communes : communes fusionnées ou aborbées
+      //-  - changement ou rationalisation de nom de voie
+
+      - Un changement de commune modifie le nom de la commune ou libellé d’acheminement de toutes les adresses comprises dans la commune affectée. Dans le cas de fusions ou absorptions de communes, des noms de voie peuvent entrer en conflit et peuvent être renommés (sinon, la discrimination se fait sur le lieu-dit &mdash; ou {i ligne 5} de l’adresse postale).
+
+
+    section
+      h3 Exhaustivité verticale : présence de tous les attributs
+      //- des composants de l’adresse : lieux-dits et libellés d’acheminement
+
+      - Les attributs {i évidents} d’un point adresse comprend le numéro, nom de voie et le code postal. Au numéro est associé le répétiteur (bis/ter ou A/B/C/...). Le code postal est naturellement très utilisé et se retrouve de fait traité par la plupart des géocodeurs, indépendamment de sa conformité avec la norme postale en ce qui concerne le libellé d’acheminement (souvent remplacé par la {i commune}).
+
+      h4 Libellés d’acheminement
+
+      - Le {i libellé d’acheminement} ou {i libellé de destination} (parfois vulgarisé en {i localité}) est le libellé situé à droite du code postal sur la {i ligne 6} d’une adresse postale réglementaire. Il est associé au code postal et se confond très souvent avec la commune, mais prend plus généralement le nom usuel de la {i ville} au sens large :
+      --
+       - nom de la commune elle-même (normalisé en lettre capitales et plus abrégée, comme {adr ST} pour remplacer {adr SAINT})
+       - nom de la ville, si celle-ci comprend plusieurs communes, comme {adr 75001 PARIS} (au lieu de {adr 75001 Paris 1er Arrondissement})
+       - nom usuel d’un quartier de la commune ou d’un groupement de communes (JUAN LES PINS, LA VARENNE ST HILAIRE, MARNE LA VALLEE)
+
+      h4 Lieux-dits
+
+      - Il s’agit d’une notion très englobante, si l’on se réfère au caractère oral et subjectif du concept ({q lieu-{b dit}}). S’agissant du géocodage d’{b adresses}, on ne retiendra que les lieux-dits {i habités} et présents dans les adresses, à savoir :
+      --
+       - les lieux-dits utilisés en tant que voie ;
+       - les lieux-dits infra-communaux (quartier, zone industrielle, ancienne commune...) mentionnés en {i ligne 5} de l’adresse
+       - les lieux-dits supra-communaux, comme les villes nouvelles ou les métropoles.
+
+      h4 Codes postaux
+
+      - Les codes postaux sont nécessaires au géocodage, sauf à se restreindre aux adresses administratives (qui nécessitent alors les départements).
+      - Les codes postaux en CEDEX sont en toute rigueur nécessaires au géocodage de ces adresses, toujours plus nombreuses et soumises de fait aux services de géocodage. Sans ces codes postaux dans le référentiel, le géocodeur doit ignorer le code postal recherché ainsi que le mot CEDEX dans le libellé d’acheminement, ce qui permettra à la majorité de ces adresses d’être géocodées correctement.
+
+      - D’autres libellés d’acheminement en CEDEX ne sont pas des communes mais des villes nouvelles ou autres structures. Par exemple : {adr 6 et 8 Avenue Blaise Pascal; Cité Descartes; 77455 Marne la Vallée Cedex 2} où la commune est en fait {adr Champs-sur-Marne}. Ce type d’adresse est utilisé, notamment dans des zones d’aménagement à fort développement urbain. L’exemple précédent pose doublement problème à la majorité des géocodeurs du marché car ni {adr Marne la Vallée} (ville nouvelle) ni {adr Cité Descartes} (quartier) ne sont présents dans le référentiel.
+
+    //- section
+    //-   h3 Cohérence sémantique
+    //-   - bis/ter, a/b/c
+
+    //- section
+    //-   h3 Adresses synonymes : le cas des angles de rue
+
+    section
+      h3 Interopérabilité : stabilité des identifiants
+      - Cet aspect se trouve à la périphérie de notre sujet puisqu’il concerne l’exploitation des identifiants d’adresses : l’adresse en tant qu’entité sémantique doté d’un identifiant unique qu’on peut croiser avec d’autres jeux de données.
+      - Le point géographique peut être amené à évoluer :
+      --
+       - dans la donnée, pour représenter plus fidèlement la réalité du terrain ;
+       - sur le terrain, en cas de travaux portant sur la modification des accès à la propriétés ou aux boîtes au lettres.
+      - L’adresse, en tant qu’{i entité administrative} ayant une {i {b composante} géographique}, n’est pas identifiée par le point : le point est une propriété de l’entité.
+      - Pour assurer la traçabilité de l’adresse sur son cycle de vie, un identifiant unique et immutable est nécessaire.
+      - Surtout, l’identifiant unique est pour tout jeu de données le pivot nécessaire à la jointure avec d’autres jeux de données. Une administration peut enregistrer de nouveaux attributs dans son fichier d’adresses, comme la parcelle cadastrale, l’altitude, la surface ou le volume du bâti, etc. Si elle géocode un nouveau jeu d’adresses en récupérant un identifiant compatible avec ceux déjà présents dans la base (issus de géocoages antérieurs), elle n’aura pas besoin d’effectuer une jointure {i spatiale} avec les risques associés à l’appariement par proximité géographique.
+
+    section
+      h3 Indicateurs de précision et de fiabilité
+      - Le point adresse est une abstraction pour désigner sous forme de point l’emplacement ou l’accès à un lieu à l’échelle du bâtiment. Il localise la plaque de rue sur la voie et peut provenir de différentes méthodes :
+      --
+       - projection du centre des parcelles cadastrales de part et d’autres du tronçon ;
+       - interpolation d’après les numéros de voie de part et d’autre du tronçon ;
+       - positionnement exact...
+      - Pour un certain nombre de cas d’exploitation, il est nécessaire de connaître la méthode utilisée pour produire le point, la précision attendue et les pourcentages d’erreur.
+      - Par ailleurs, la {i source} de ces données est importante pour la traçabilité de l’information, qui servira de base à des interventions, des déplacements ou des observations.
+      - La précision et la fiabilité du point ne doivent pas être confondues avec le coefficient de correspondance des résultats de géocodages, dont il est question plus loin.
+      - Voir l’article : {a(href=../../etat-des-lieux/indicateur-de-qualite/) Indicateur de qualité : oui mais lequel ?}
+
+  //----------------------------------------------------------------------------
+
+  div.grey
+   section
+    h2 Qualité du moteur de rapprochement
+
+    - La qualité du moteur de géocodage se compare avec la capacité d’un cerveau humain à identifier une adresse sur un territoire parfaitement connu, c’est-à-dire doté de fonctions complexes comme par exemple :
+    --
+     - l’aptitude à rapprocher les mots malgré les erreurs et abréviations ;
+     - l’aptitude à reconnaître la structure de l’adresse : ne pas confondre, par exemple, la {adr rue de Paris} à Saint-Mandé et la {adr rue de Saint-Mandé} à Paris ;
+     - l’aptitude à comprendre les amalgames de proximité, comme par exemple : {adr 2 place de la Défense 92800 PARIS}.
+
+    - Le moteur de rapprochement doit être d’autant plus puissant et flexible que les adresses en entrées sont inexactes ou non-conformes à la norme choisie (administrative ou postale) et que le référentiel d’adresses sera verticalement incomplet (par exemple, s’il manque les lieux-dits).
+
+    section
+      h3 Recherche libre et structurée
+
+      - La recherche structurée consiste à soumettre au géocodage des adresses en séparant les composants : numéro, voie, lieu-dit, code postal, libellé/commune. Il faut pour cela que les adresses soient ainsi structurées en amont (par opposition à une colonne ou champ de recherche unique).
+
+      - La recherche structurée présente moins de risque d’ambiguité (notamment entre la {adr rue de Paris} à Saint-Mandé et la {adr rue de Saint-Mandé} à Paris) mais n’accepte, en corollaire, aucune confusion entre les champs, portant un degré d’exigence élevé sur les adresses recherchées. Dans la pratique, cette exigence se traduit soit par des coûts humains de validation/correction (à posteriori sur un fichier client par exemple), soit par une ergonomie du formulaire : auto-complétion des champs, validation par webservices, etc.
+
+      h4 Recherche et filtres
+
+      - La recherche peut être à la fois libre et structurée, si l’on souhaite par exemple restreindre la recherche à un département donné. Le filtre peut être spécifié à tout niveau administratif, comme la commune ou le quartier.
+
+      - Le filtre peut être indispensable dans le cas d’un géocodage territorial, limité à un département ou une communauté de communes, par exemple. Un fichier d’adresses {i locales} peut être naturellement peu rigoureux sur les codes postaux par exemple, du fait qu’il est relatif à un département. Le service de géocodage, s’il est national ou international, a besoin de le savoir pour éviter toute confusion avec des adresses en d’autres territoires.
+
+      - Le concept de {i filtre} ne doit pas être confondu avec celui de {i préférence}, qui ne fait qu’indiquer une priorité.
+
+
+    section
+      h3 Tolérance aux erreurs de frappe
+
+      - La tolérance aux erreurs de frappe, aux abréviations et autres orthographes dérivées ont été abordés sous l’angle de la qualité des adresses en entrée. Le moteur de rapprochement doit accepter ces formes alternatives d’écriture, à l’aide de dictionnaires de synonymes si nécessaire.
+
+      - On peut raisonnablement s’attendre à ce que des fautes d’orthographe mineures soient tolérées, puisque l’utilisateur humain ne peut garantir la perfection de son orthographe dans les circonstance de l’écriture au clavier d’ordinateur. Les fautes légères induisant des ambiguités (par exemple : {adr 15 Rue Charrière 75011 Paris} et {adr 15 Rue Lacharrière 75011 Paris}) restent relativement rares.
+
+    section
+      h3 Correspondance partielle
+
+      - Il s’agit de l’aptitude du géocodeur à ignorer les mots qui empêchent une correspondance pertinente, si cela permet d’aboutir à une correspondance globalement satisfaisante.
+
+      - Ce besoin a deux origines principales.
+
+      - D’abord, dans le {b référentiel d’adresses}, de la difficulté à garantir :
+      --
+       - l’exhaustivité {i horizontale} car si l’adresse manque dans le référentiel, le moteur pourra ignorer les composant spécifiques (numéro, voie) pour identifier le quartier ou la ville ;
+       - l’exhaustivité {i verticale} car si le lieu-dit précisé n’existe pas dans le référentiel, il doit être ignoré.
+
+      - Ensuite, dans l’adresse recherchée, des précisions privées telles que le nom propre du lieu, précision de bâtiment, boîte postale, etc. peuvent être légitimement présentes et notamment dans une liste d’adresses non-structurées.
+
+      - Cette aptitude est également nécessaire pour les appelations alternatives : l’{adr Avenue du Général de Gaulle} doit être trouvée si l’on cherche l’{adr Avenue Charles de Gaulle}.
+
+    section
+      h3 Préférence géographique
+      - La préférence géographique consiste à donner une précision géographique en paramètres de la recherche, c’est-à-dire
+      --
+       - les coordonnées d’un point central avec le rayon, ou
+       - les coordonnées délimitant un rectangle.
+
+      - La {i préférence} n’est pas un {i filtre} : il priorise les résultats appartement à la zone géographique demandée. C’est utile {pi sinon indispensable} en cas de recherche interactive sur interface cartographique.
+
+    //- section
+    //-   h3 Internationalisation
+    //-   - Il y a l’internationalisation de la requête (possibilité de soumettre une adresse
+
+    section
+      h3 Richesse et flexibilité du résultat
+
+      h4 Système de référence spatial (SRS)
+      - Il est utile (mais pas nécessaire) de pouvoir disposer des coordonnées géographiques dans différents SRS, par exemple {i Lambert 93} pour la France métropolitaire ou les zones {i Lambert coniques conformes} et pas seulement le système mondial {i WGS 84}.
+      - Si un seul SRS est proposé, il doit être le {i WGS 84} du fait de l’universalité des API et outils logiciels susceptibles d’exploiter ces coordonnées, sauf besoin particulier.
+
+      h4 Adresse structurée
+      - L’aptitude d’un géocodeur à retourner les composants de l’adresses sous forme de champs séparés est indispensable car une adresse est nécessairement structurée. Sans cette information, la réponse serait incomplète car sans adresse sémantique.
+
+      h4 Adresse formatée
+      - L’adresse formatée sur une ligne est d’autant plus utile qu’il s’agit d’un besoin fréquent et que les règles de formatage ne se résument pas à une concaténation triviale.
+
+      h4 Attributs supplémentaires
+      - Les attributs supplémentaires font la valeur ajoutée de services additionnels : altitude, parcelle cadastrale, IRIS... Le géocodage est un service {i fonctionnel} neutre au sens métier (adresse ↔ géographie) et de nombreux services de plus haute valeur ajoutée ({i fonctionnelle} ou {i métier}) peuvent être proposés.
+      - Ces attributs comptent dans la valeur du service mais n’entrent pas dans le champ de la présente étude. Il faut cependant en préserver le potentiel par la stabilité des identifiants.
+
+    section
+      h3 Coefficient de correspondance
+
+      - Il représente le degré de correspondance entre l’adresse recherchée et le résultat identifié. Si l’adresse soumise est exacte et complète, le coefficient se rapproche de 100 %. Une baisse de cette valeur témoigne d’un résultat plus éloigné de ce point de vue.
+
+      - Ce coefficient ne doit pas être confondu avec l’indicateur de précision et de fiabilité dont il est question plus haut.
+
+
+  //----------------------------------------------------------------------------
+
+  //- section
+  //-   h2 Qualité de l’utilisation
+
+  //-   - Ce domaine
+  //-   section
+  //-     h3 Ergonomie de l’interface graphique ou programmatique
+
+  //-   section
+  //-     h3 Performances
+
+
+  //- div.grey
+  //-  section
+  //-   h2 Conclusion
+
+  //-   section
+  //-     //- h3 Coextensivité des domaines des domaines de la qualité
+  //-     h3 Recherche, moteur et référentiel : une qualité coextensive
+  //-     //- h3 Les {q zones grises} entre les domaines de la qualité
+  //-     - L’analyse fait resortir des zones grises entre les trois domaines que sont la qualité de l’adresse recherchée, le moteur de rapprochement et le référentiel d’adresses : la qualité de l’un diminue le besoin de qualité de l’autre. On citera par exemple :
+
+  //-     --
+  //-      - La tolérance aux fautes légères, une qualité {i de rapprochement} qui contrebalance le manque de qualité dans {i l’adresse recherchée}
+  //-      - La correspondance partielle, une qualité
+
+
+  //-   //- section
+  //-   //-   h3 Exemples en négatif
+  //-   //- section
+  //-   //-   h3 La qualité vue par le prisme des {i défaut} constatés
+  //-   //-   - le négatif du présent article

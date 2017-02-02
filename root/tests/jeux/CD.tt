@@ -1,0 +1,8 @@
+jeu#CD
+  titre Nom de voie contenant des chiffres
+
+  definition Le nom de la voie contient un nombre (ou date), pouvant être écrit en chiffres, en lettre voire en chiffres romains
+
+  exemples
+    - Avenue du 11 novembre / onze novembre
+    - Boulevard Jean XXIII / Jean 23 / Jean Vingt-Trois

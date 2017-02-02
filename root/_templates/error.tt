@@ -1,0 +1,14 @@
+:on error
+  div error!
+    span type =
+      :process error.attributes.type
+
+:on fs:error (error)
+  :process. {type:"meta", name: "status", value:404}
+  page
+    .titre = Page Not Found
+    h1 Erreur 404 - Page Non Trouvée
+    section.center
+      h2 Désolé, la page que vous cherchez n’existe pas.
+      a.button.href=/ Retour à l’accueil
+      //- :process error.attributes.message

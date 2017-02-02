@@ -1,0 +1,179 @@
+
+
+
+//-- Sémantique inline : {e}, {o}, {s}, {n} ...
+
+//- "n" comme "nom" : représente un nom externe (nom de logiciel, de solution, de société, etc.)
+:on n
+  span.name
+    :process n.children
+
+//- "e" comme "expression" (en rouge) : nombre, calcul, appel de fonction...
+:on e
+  samp
+    :process e.children
+
+//- "s" comme "screen" pour un élément à cliquer ou choisir, tel un menu ou un lien
+:on s
+  :each item, idx in (s.children[0].text || "").split(">")
+    :if idx > 0
+      span &rarr;
+    span.screen-item
+      :process item.trim()
+
+//- "o" comme "object" pour nom de symbole : nom de fonction, de table
+:on o
+  span.obj-name
+    :process o.children
+
+//- "t" comme "type" pour la désignation de ce qu'_est_ une chose, que ce soit :
+//-   - le type d'une variable
+//-   - la désignation de quelque chose, exemple : la {t société} {n Geonef}
+//-   - une propriété qu'on veut souligner : une fonction {t croissante}
+:: t
+  span.obj-type
+    :process t.children
+
+//- "k" comme "key" pour une touche à presser ou un clic (mis entre "<" et ">")
+:: k
+  kbd
+    :process k.children
+
+//- "q" comme "quote" pour un texte entre guillemets (par défaut, à la française : «—»)
+//- :on q {span.quote {:process q.children}}
+
+:on 1er
+  | 1
+  sup er
+:on ^eme
+  sup e
+:on 1st
+  | 1
+  sup st
+:on 2nd
+  | 2
+  sup nd
+:on 3rd
+  | 3
+  sup rd
+:on ^th
+  sup th
+:on pi  &ndash; 
+
+:: raw
+  textarea.raw.readonly=readonly
+    :process raw.children
+
+:: update
+  span.update UPDATE:
+    :process update.children
+
+:on - (n)
+  p
+    :attr.+ = n.attributes
+    :process n.children
+
+:on -- (list)
+  :on - (item)
+    li
+      :process item.children
+  ul
+    :attr.+ = list.attributes
+    :process list.children
+
+:on -0 (list)
+  :on - (item)
+    li
+      :process item.children
+  ol
+    :attr.+ = list.attributes
+    :process list.children
+
+:on url
+  a.ext.target=_blank
+    :attr.href = url.children[0].value
+    :attr += url.attributes
+    :process url.children
+
+:on ext
+  a.ext.target=_blank
+    :attr += ext.attributes
+    :process ext.children
+
+:on middot
+  span &middot;
+
+:on ref
+  :on authors
+    :var ref.authors = authors.children
+  :on book
+    :var ref.book = book.children
+  :on date
+    :var ref.date = date.children
+
+  :process ref.children
+
+  -.cite &mdash;&nbsp;
+    :process ref.authors
+    | (
+    :process ref.date
+    |)
+    :if ref.book
+      | ,&nbsp;
+      i
+        :process ref.book
+
+:on image
+  figure
+    :attr.class = image.attributes.position || "center"
+    :if image.attributes.width
+      :attr.style = "width:"+image.attributes.width+"px"
+    img
+      :attr.src = image.attributes.src
+      :if image.attributes.width
+        :attr.width = ""+image.attributes.width
+
+    :if image.children.length > 0
+      figcaption
+        :process image.children
+
+:: code-ref (ref)
+  a
+    :attr.href = "#" + ref.children[0].text
+    :process ref.children
+
+//- :: sql
+//-   :: content
+//-     code
+//-       :if sql.attributes.raw != "true"
+//-         :attr.class = "language-sql"
+//-       :process sql.children
+
+//-   :if sql.attributes.raw != "true"
+//-     :var page.usesPrism = true
+
+//-   :if sql.attributes.pre != "false"
+//-     pre
+//-       content
+//-   :if sql.attributes.pre == "false"
+//-     p.code
+//-       content
+
+:: sql
+    :var page.usesPrism = true
+    pre
+      code.language-sql
+        :process sql.children
+
+
+:: sql-raw (sql)
+    p.code
+      code
+        :process sql.children
+
+
+  //- div.sql
+  //-   :attr.+ = sql.attributes
+  //-   :process sql.children
+
+:: draft

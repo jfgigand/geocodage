@@ -1,0 +1,75 @@
+:on page
+
+  :var page.attributes.titre ?= "?"
+  :var page.attributes.stylesheets ?= []
+  :var page.attributes.scripts ?= []
+  :eval page.attributes.stylesheets.unshift("style")
+
+  :process. {type:"meta", name: "type", value: "text/html"}
+
+  :process.PrintXml
+
+    :process.ParseTextree
+      :process.ReadFile
+        fs:glob _templates/html/*.tt
+
+    html
+        head
+          meta
+            .content = text/html
+            .charset = utf-8
+            .http-equiv = content-type
+
+          title
+            :process page.attributes["titre-complet"] || (page.attributes.titre + "-Géocodage")
+
+          :each stylesheet in page.attributes.stylesheets
+            link.rel=stylesheet.type=text/css
+              :attr.href = url(stylesheet, "/assets", ".css")
+
+          :each script in page.attributes.scripts
+            script.type=text/javascript
+              :attr.src = url(script, "/assets", ".js")
+
+        body.doc
+
+          :if !page.attributes.noFrame
+            nav-png
+
+          :process page.children
+
+          :if !page.attributes.noFrame
+            foot-png
+
+          // Piwik
+          script.type=text/javascript.
+            var _paq = _paq || [];
+            _paq.push(['trackPageView']);
+            _paq.push(['enableLinkTracking']);
+            _paq.push([function() {
+            var self = this;
+            function getOriginalVisitorCookieTimeout() {
+             var now = new Date(),
+             nowTs = Math.round(now.getTime() / 1000),
+             visitorInfo = self.getVisitorInfo();
+             var createTs = parseInt(visitorInfo[2]);
+             var cookieTimeout = 33696000; // 13 mois en secondes
+             var originalTimeout = createTs + cookieTimeout - nowTs;
+             return originalTimeout;
+             }
+             this.setVisitorCookieTimeout( getOriginalVisitorCookieTimeout() );
+             }]);
+              (function() {
+                var u=(("https:" == document.location.protocol) ? "https" : "http") + "://piwik.ign.fr/piwik/";
+                _paq.push(['setTrackerUrl', u+'piwik.php']);
+                _paq.push(['setSiteId', 41]);
+                var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0]; g.type='text/javascript';
+                g.defer=true; g.async=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+              })();
+            </script>
+
+          noscript
+            p
+              img.style=border:0
+                .src = http://piwik.ign.fr/piwik/piwik.php?idsite=41
+          // End Piwik Code

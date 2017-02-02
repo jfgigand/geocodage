@@ -1,0 +1,37 @@
+page
+  .titre = Géocodage IGN
+  //- .github-issue = 8
+
+  h1 Les services de géocodage à l’IGN : vue d’ensemble
+
+  intro
+    -
+
+  section
+    h2 Géocodage de masse
+
+    section
+      h3 {i Mes Adresses}, l’outil web grand public
+    section
+      h3 Mon Géocodeur, la déclinaison {i desktop} pour les professionnels
+
+  section
+    h2 Services API
+
+    section
+      h3 API HTTP de géocodage
+      - Appartenant à l’infrastructure du Géoportail, ce service permet de géocoder des adresses, lieux-dits ou parcelles cadastrales par le biais de requêtes HTTP.
+      - Il est conforme au standard {b Open Location Services} (OpenLS) de l’Open Géospatial Consortium (OGC) : on envoie une requête HTTP contenant une requête de géocodage au format XML/OpenLS, pour recevoir la réponse au format XML/OpenLS.
+      - Si la requête est mise en oeuvre depuis un site internet, la bibliothèque d’accès aux ressources du Géoportail (voir ci-dessous)
+
+    section
+      h3 API Javascript : bibliothèque d’accès à l’API HTTP
+
+    section
+      h3 Widgets javascript pour OpenLayers et Leaflet
+
+  section
+    h2 Outils obsolètes
+
+    section
+      h3 Visualiseur d’adresses

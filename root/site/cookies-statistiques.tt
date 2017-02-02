@@ -1,0 +1,14 @@
+page
+  .titre = Cookies et statistiques
+
+  h1 Cookies et statistiques
+
+  section
+    - En vue d’adapter le site Plateforme Nationale de Géocodage aux demandes de ses visiteurs, l’Institut national de l’information géographique et forestière (IGN) mesure le nombre de visites, le nombre de pages vues ainsi que l’activité des visiteurs sur le site et leur fréquence de retour.
+    - PIWIK, l’outil de statistiques utilisé par l’IGN, génère un cookie avec un identifiant unique, dont la durée de conservation est limitée à 13 mois. L’outil utilisé collecte également votre adresse IP, afin de déterminer la ville depuis laquelle vous vous connectez. Celle-ci est immédiatement anonymisée après utilisation. L’IGN ne peut donc en aucun cas remonter par ce biais à une personne physique.
+    - Les données recueillies ne sont pas cédées à des tiers ni utilisées à d’autres fins.
+
+  div.grey
+    section
+      iframe.style=border:0;height:200px;width:100%;
+        .src = http://piwik.ign.fr/piwik/index.php?module=CoreAdminHome&amp;action=optOut&amp;language=fr

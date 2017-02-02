@@ -1,0 +1,41 @@
+page
+  .titre = Outils
+
+  h1 Outils développés ou exploités dans le cadre de la mission
+
+  section.stopf
+    a.href=carte/
+      img.floatr.width=400
+        .src = carte-interactive.png
+
+    h2
+      a.href=carte/ Géocodeur interactif
+    - Le géocodeur interactif permet de tester une adresse en la géocodant simultanément avec le service de l’IGN, le géocodeur de la Base Adresse Nationale (BAN) et celui de Google. Les résultats sont affichés sur la carte interactive, afin de comparer facilement les résultats.
+    - {b Statut : fonctionnel} &nbsp; {a.button(href=carte/) Ouvrir}
+
+  div.grey
+   section
+    h2 {ext(href=https://github.com/plateforme-nationale-geocodage/geocoder-proxy) {e geocoder-proxy}} : rassembler différents services de géocodage en une seule API
+    - Fruit d’un développement spécifique, {e geocoder-proxy} est une sorte de {i courtier en géocodage} puisqu’il expose des multiples services de géocodage au travers d’une API unique et conforme au standard {ext(href=https://github.com/geocoders/geocodejson-spec) GeocodeJson}. Cela permet d’utiliser {e geocoder-tester} pour tester les services de géocodage suivants :
+    --
+     - IGN
+     - Base Adresse Nationale (BAN/Addok)
+     - Google
+     - HERE
+     - MapQuest
+     - OpenStreetMap/Nominatim
+
+    - Il est écrit en Javascript/NodeJS et expose une API HTTP.
+
+    - {b Statut : version alpha} (semble fonctionner). {ext.button(href=https://github.com/plateforme-nationale-geocodage/geocoder-proxy) Code source sur GitHub}
+
+  section.stopf
+    img.floatr.width=400
+       .src = ../tests/sadt-geocode-test.svg
+
+    h2 {ext(href=https://github.com/plateforme-nationale-geocodage/geocoder-tester/) {e geocoder-tester}} : exécution des batteries de test
+    - Développé par {ext(href=https://www.etalab.gouv.fr/) Etalab}, {e geocoder-tester} est un programme écrit en Python qui permet d’exécuter des tests en ciblant tout service de géocodage fournissant une API conforme au standard {ext(href=https://github.com/geocoders/geocodejson-spec) GeocodeJson}.
+    - Les tests sont maintenus au format CSV ou Yaml.
+    - {b Statut : l’outil fonctionne mais les tests n’ont pas encore été travaillés} (les tests existants dans le dépôt proviennent d’expérimentations antérieures et ne sont pas validés selon la méthodologie de la Plateforme Nationale de Géocodage)
+    -.center
+      ext.button(href=https://github.com/plateforme-nationale-geocodage/geocoder-tester) Code source sur GitHub

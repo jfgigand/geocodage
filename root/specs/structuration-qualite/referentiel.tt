@@ -1,0 +1,97 @@
+page
+  .titre = Référentiel-Spec
+
+    h1 La qualité du référentiel d’adresses
+
+    section
+      - La base de données de référence est responsable d’une large part de la qualité d’un géocodage. Une adresse qui n’est n’y est pas présente ne peut pas être retournée par le moteur de géocodage.
+
+      - Un service de géocodage est ainsi jugé globalement sur sa capacité à géocoder des adresses valides. Il est ici nécessaire de distinguer la qualité de la base et l’aptitude du moteur à identifier les adresses de la base correspondant à la recherche.
+
+    div.grey
+     section
+      h3 Exhaustivité horizontale : présence de toutes les adresses
+
+      - À l’évidence, le premier indicateur de qualité de la base de données d’adresses est son exhaustivité sur le territoire : toutes les adresses (déclarées par les municipalités) sont-elles présentes dans la base ?
+
+    //- section
+      h4 Actualité des données
+
+      - Les adresses naissent et meurent suivant le développement urbain : les changements sont validés par arrêté municipal. Au niveau national, il y a donc continuellement des changements, qui doivent être intégrés au référentiel d’adresses. Un service de géocodage fiable doit ainsi préciser la date d’actualité des données pour qu’une garantie d’{i exhaustivité} fasse sens.
+
+      - Par exemple, une nouvelle voie ne sera pas trouvée entre la date de l’arrêté municipal et son intégration dans le référentiel, sachant qu’une infrastructure technique et des processus métiers rationnalisent tout ceci avec les exigences de traçabilité. Les travaux menés dans le cadre du projet Base d’Adresses Nationale (BAN) visent à raccourcir ce délai encore davantage en organisant la remontée des changements dès le stade du projet d’aménagement urbain.
+
+      - L’actualité est un indicateur particulièrement pertinent car les adresses nouvellement créées sont plus fréquemment recherchées étant donnés les travaux de constructions et livraisons dus à l’aménagement. Les locaux étant nouveaux et les adresses peu encore connues, le géocodage est particulièrement important pour ces adresses.
+
+      h4 Continuité des adresses
+
+      - Il y a les adresses {i officielles}, qui évoluent de façon formelle, et les adresses d’{i usage}. Une adresse purement supprimées ne sera plus utilisée, en revanche une adresse qui change devra être présente dans la base à la fois sous sa forme nouvelle (actualité des données), mais aussi sous sa forme ancienne. Celle-ci perdure en effet à travers les fichiers d’adresses des entreprises et des particuliers, les supports de communication, etc.
+      - Autrement dit, une adresse ne doit pas, d’un jour à l’autre, {i disparaître} des résultats d’un géocodeur.
+      - On appelle {i changement d’adresse} la modification d’un ou plusieurs composants de l’adresse (voie, commune...) attaché à un point géographique inchangé.
+      //- - Les changement adresses peuvent également changer :
+      //- --
+      //-  - changement de communes : communes fusionnées ou aborbées
+      //-  - changement ou rationalisation de nom de voie
+
+      - Un changement de commune modifie le nom de la commune ou libellé d’acheminement de toutes les adresses comprises dans la commune affectée. Dans le cas de fusions ou absorptions de communes, des noms de voie peuvent entrer en conflit et peuvent être renommés (sinon, la discrimination se fait sur le lieu-dit &mdash; ou {i ligne 5} de l’adresse postale).
+
+
+    section
+      h3 Exhaustivité verticale : présence de tous les attributs
+      //- des composants de l’adresse : lieux-dits et libellés d’acheminement
+
+      - Les attributs {i évidents} d’un point adresse comprend le numéro, nom de voie et le code postal. Au numéro est associé le répétiteur (bis/ter ou A/B/C/...). Le code postal est naturellement très utilisé et se retrouve de fait traité par la plupart des géocodeurs, indépendamment de sa conformité avec la norme postale en ce qui concerne le libellé d’acheminement (souvent remplacé par la {i commune}).
+
+      h4 Libellés d’acheminement
+
+      - Le {i libellé d’acheminement} ou {i libellé de destination} (parfois vulgarisé en {i localité}) est le libellé situé à droite du code postal sur la {i ligne 6} d’une adresse postale réglementaire. Il est associé au code postal et se confond très souvent avec la commune, mais prend plus généralement le nom usuel de la {i ville} au sens large :
+      --
+       - nom de la commune elle-même (normalisé en lettre capitales et plus abrégée, comme {adr ST} pour remplacer {adr SAINT})
+       - nom de la ville, si celle-ci comprend plusieurs communes, comme {adr 75001 PARIS} (au lieu de {adr 75001 Paris 1er Arrondissement})
+       - nom usuel d’un quartier de la commune ou d’un groupement de communes (JUAN LES PINS, LA VARENNE ST HILAIRE, MARNE LA VALLEE)
+
+      h4 Lieux-dits
+
+      - Il s’agit d’une notion très englobante, si l’on se réfère au caractère oral et subjectif du concept ({q lieu-{b dit}}). S’agissant du géocodage d’{b adresses}, on ne retiendra que les lieux-dits {i habités} et présents dans les adresses, à savoir :
+      --
+       - les lieux-dits utilisés en tant que voie ;
+       - les lieux-dits infra-communaux (quartier, zone industrielle, ancienne commune...) mentionnés en {i ligne 5} de l’adresse
+       - les lieux-dits supra-communaux, comme les villes nouvelles ou les métropoles.
+
+      h4 Codes postaux
+
+      - Les codes postaux sont nécessaires au géocodage, sauf à se restreindre aux adresses administratives (qui nécessitent alors les départements).
+      - Les codes postaux en CEDEX sont en toute rigueur nécessaires au géocodage de ces adresses, toujours plus nombreuses et soumises de fait aux services de géocodage. Sans ces codes postaux dans le référentiel, le géocodeur doit ignorer le code postal recherché ainsi que le mot CEDEX dans le libellé d’acheminement, ce qui permettra à la majorité de ces adresses d’être géocodées correctement.
+
+      - D’autres libellés d’acheminement en CEDEX ne sont pas des communes mais des villes nouvelles ou autres structures. Par exemple : {adr 6 et 8 Avenue Blaise Pascal; Cité Descartes; 77455 Marne la Vallée Cedex 2} où la commune est en fait {adr Champs-sur-Marne}. Ce type d’adresse est utilisé, notamment dans des zones d’aménagement à fort développement urbain. L’exemple précédent pose doublement problème à la majorité des géocodeurs du marché car ni {adr Marne la Vallée} (ville nouvelle) ni {adr Cité Descartes} (quartier) ne sont présents dans le référentiel.
+
+    //- section
+    //-   h3 Cohérence sémantique
+    //-   - bis/ter, a/b/c
+
+    //- section
+    //-   h3 Adresses synonymes : le cas des angles de rue
+
+    div.grey
+     section
+      h3 Interopérabilité : stabilité des identifiants
+      - Cet aspect se trouve à la périphérie de notre sujet puisqu’il concerne l’exploitation des identifiants d’adresses : l’adresse en tant qu’entité sémantique doté d’un identifiant unique qu’on peut croiser avec d’autres jeux de données.
+      - Le point géographique peut être amené à évoluer :
+      --
+       - dans la donnée, pour représenter plus fidèlement la réalité du terrain ;
+       - sur le terrain, en cas de travaux portant sur la modification des accès à la propriétés ou aux boîtes au lettres.
+      - L’adresse, en tant qu’{i entité administrative} ayant une {i {b composante} géographique}, n’est pas identifiée par le point : le point est une propriété de l’entité.
+      - Pour assurer la traçabilité de l’adresse sur son cycle de vie, un identifiant unique et immutable est nécessaire.
+      - Surtout, l’identifiant unique est pour tout jeu de données le pivot nécessaire à la jointure avec d’autres jeux de données. Une administration peut enregistrer de nouveaux attributs dans son fichier d’adresses, comme la parcelle cadastrale, l’altitude, la surface ou le volume du bâti, etc. Si elle géocode un nouveau jeu d’adresses en récupérant un identifiant compatible avec ceux déjà présents dans la base (issus de géocoages antérieurs), elle n’aura pas besoin d’effectuer une jointure {i spatiale} avec les risques associés à l’appariement par proximité géographique.
+
+    section
+      h3 Indicateurs de précision et de fiabilité
+      - Le point adresse est une abstraction pour désigner sous forme de point l’emplacement ou l’accès à un lieu à l’échelle du bâtiment. Il localise la plaque de rue sur la voie et peut provenir de différentes méthodes :
+      --
+       - projection du centre des parcelles cadastrales de part et d’autres du tronçon ;
+       - interpolation d’après les numéros de voie de part et d’autre du tronçon ;
+       - positionnement exact...
+      - Pour un certain nombre de cas d’exploitation, il est nécessaire de connaître la méthode utilisée pour produire le point, la précision attendue et les pourcentages d’erreur.
+      - Par ailleurs, la {i source} de ces données est importante pour la traçabilité de l’information, qui servira de base à des interventions, des déplacements ou des observations.
+      - La précision et la fiabilité du point ne doivent pas être confondues avec le coefficient de correspondance des résultats de géocodages, dont il est question plus loin.
+      - Voir l’article : {a(href=../../etat-des-lieux/indicateur-de-qualite/) Indicateur de qualité : oui mais lequel ?}

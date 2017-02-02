@@ -1,0 +1,22 @@
+
+:: interview
+
+  section
+    :: intro
+      div.intro.stopf
+        :process intro.children
+
+    :: question
+      div.question
+        b
+          :process question.children
+
+    :: reponse
+      div.stopf
+        :process reponse.children
+
+    :: conclusion
+      div.conclusion.stopf
+        :process conclusion.children
+
+    :process interview.children

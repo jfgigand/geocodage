@@ -1,0 +1,99 @@
+:process.ParseTextree
+  :process.ReadFile
+    fs:glob participants/_index.templates.tt
+
+page
+  .titre = Participants
+
+  h1 Participants au projet
+  //- h1 Diagnostic des usages
+
+  participants.type=Adhérents
+
+    participant
+      .nom = Département de Seine-Saint-Denis
+      .sigle = CD93
+      .path = seine-saint-denis
+      .logo = saine-saint-denis.png
+
+      --
+       -
+         a.href=seine-saint-denis/ Lire le témoignage de David Delhorbe, géomaticien au conseil départemental de Saine-Saint-Denis (29 novembre 2016)
+
+    participant
+      .nom = Préfecture de Police de Paris
+      .sigle = PPP
+      .path = prefecture-police
+      .logo = ppp.png
+
+      - Contact :
+      --
+       - Julien Moquet
+
+    participant
+      .nom = Commissariat général pour l’égalité des territoires
+      .sigle = CGET
+      .path = cget
+      .logo = cget.png
+
+      - Contacts :
+      --
+       - Helga Mondésir
+       - Pierre-Alban Bonin
+
+    participant
+      .nom = Institut national de la statistique et des études économiques
+      .sigle = INSEE
+      .path = insee
+      .logo = insee.png
+
+      - À paraître prochainement : Interview de {i Vincent Loonis}, {i Ali Hachid} et {i Valérie Darrriau} (15 décembre 2016)
+      //- -
+        //- a.href=insee/ Lire l’interview de {i Vincent Loonis}, {i Ali Hachid} et {i Valérie Darrriau} (15 décembre 2016)
+
+    //- participant
+    //-   .nom = Ministère de la jeunesse et des sports
+    //-   .path = ministere-jeunesse-sports
+
+    //-   - Contact :
+    //-   --
+    //-    - Raphaël Janelli
+
+    participant
+      .nom = Institut national de l’information géographique et forestière
+      .sigle = IGN
+      .path = ign
+      .logo = /assets/img/ign.png
+      .logo-width = 120
+
+      -
+        a.href=ign/api-service-geoportail Lire l’interview de {i Thibault Coupin}, chef de la division {i Services} au Pôle Géoportail et intégrateur de l’{b API de service de géocodage Géoportail} (19 décembre 2016)
+      -
+        a.href=ign/prestations-sur-mesure Lire l’interview de {i Didier Bouteloup} et {i Etienne Dumont}, du service des {b prestations de géocodage sur mesure} (département des Services et applications innovantes) (4 janvier 2016)
+
+
+  //- participants.type=Invités
+
+  //-   participant
+  //-     .nom = Direction de l’information légale et administrative
+  //-     .sigle = DILA
+  //-     //- BUREL Frederic ‎[Frederic.BUREL@dila.gouv.fr]‎‎; OTPARLIC Alexandre ‎[Alexandre.OTPARLIC@dila.gouv.fr]‎
+
+  //-   participant
+  //-     .nom = Ministère des affaires sociales et de la santé
+  //-     //- Matthieu André
+
+  //-   participant
+  //-     .nom = Gendarmerie nationale
+  //-     //- Eric Pommereau, Paule Quere
+
+  //-   participant
+  //-     .nom = Ministère de la culture
+  //-     //- Anne-Laure Pantin, Pierre le Clainche
+
+  //-   participant
+  //-     .nom = Ministère de la justice
+  //-     //- Benjamin Cotasson
+
+  //-   participant
+  //-     .nom = Ministère de l’agriculture, de l’agroalimentaire et de la forêt

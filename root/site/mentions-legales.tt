@@ -1,0 +1,42 @@
+page
+  .titre = Mentions légales
+
+  h1#top-title Mentions légales
+
+  section
+    h2 Informations générales
+
+    section
+      h3 Éditeur du site plateforme-nationale-geocodage.fr
+      - Direction de la communication de l’Institut national de l’information géographique et forestière (IGN)
+      - 73, avenue de Paris – 94165 SAINT-MANDÉ CEDEX – France
+      - Téléphone : 01 43 98 80 00
+
+    section
+      h3 Directeur de la publication
+      - Daniel Bursaux, directeur général de l’IGN
+
+  section
+    h2 Conception graphique et ergonomique, développements techniques et hébergement du site
+    - La charte graphique, les développements techniques, l’hébergement et la maintenance du site plateforme-nationale-geocodage.fr sont assurés par l’IGN.
+
+  section
+    h2 Droit de propriété intellectuelle
+    - Les illustrations, les animations, les vidéos, le contenu éditorial, les divers éléments de la charte graphique ainsi que les données cartographiques issues de la consultation en ligne figurant sur le site plateforme-nationale-geocodage.fr sont la propriété de l’IGN. Leur utilisation est soumise à l’accord préalable de l’IGN. Écrire au gestionnaire du site
+
+  section
+    h2 Cookies et statistiques
+    - En vue d’adapter le site plateforme-nationale-geocodage.fr aux demandes de ses visiteurs, l’IGN mesure le nombre de visites, le nombre de pages vues ainsi que l’activité des visiteurs sur le site et leur fréquence de retour. PIWIK, l’outil de statistiques utilisé par l’IGN, génère un cookie avec un identifiant unique, dont la durée de conservation est limitée à 13 mois. L’outil utilisée collecte également votre adresse IP, afin de déterminer la ville depuis laquelle vous vous connectez. Celle-ci est immédiatement anonymisée après utilisation. L’IGN ne peut donc en aucun cas remonter par ce biais à une personne physique. Les données recueillies ne sont pas cédées à des tiers ni utilisés à d’autres fins.
+
+  section
+    h2 Liens hypertextes proposés sur plateforme-nationale-geocodage.fr
+    - Le site plateforme-nationale-geocodage.fr renvoie sur de nombreux liens hypertextes. Ces pages web dont les adresses sont régulièrement vérifiées ne font pas partie du site plateforme-nationale-geocodage.fr : elles n’engagent donc pas la responsabilité de la rédaction du site plateforme-nationale-geocodage.fr.
+    - La rédaction du site plateforme-nationale-geocodage.fr autorise la mise en place de liens hypertextes (y compris profonds) pointant vers ses pages mais se réserve le droit de demander la suppression d’un lien qu’il estime non conforme à l’objet du site plateforme-nationale-geocodage.fr, à ses missions ou plus généralement à l’éthique d’un site d’un établissement public national.
+
+  section
+    h2 Nous contacter
+    - Pour toutes informations ou questions relatives au site plateforme-nationale-geocodage.fr :
+    -
+      a
+        .href = mailto:jean-francois.gigand@ign.fr
+        |Écrire au gestionnaire du site

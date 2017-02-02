@@ -1,0 +1,61 @@
+:process. {type:"meta", name: "cache", value:false}
+page
+  .titre = Géocodage interactif
+  .stylesheets[] = http://openlayers.org/en/v3.17.1/css/ol.css
+  .stylesheets[] = map
+  .stylesheets[] = gpp/GpPluginOl3
+  .scripts[] = http://openlayers.org/en/v3.17.1/build/ol.js
+  .scripts[] = gpp/GpServices
+  .scripts[] = gpp/GpPluginOl3
+  .scripts[] = map
+
+  //- div
+  //-   :process JSON.stringify(REQUEST.query)
+
+  h1#top-title Géocodage interactif
+    span.sub
+      :if REQUEST.query.adresse
+        span Adresse :
+        i
+          :process REQUEST.query.adresse
+
+      :if !REQUEST.query.adresse
+        span Vérifier une adresse selon les différents services
+
+  section
+    form.method=get
+      div
+        span Adresse :
+        input#search.adr.type=text
+          .name=adresse
+          :attr.value = REQUEST.query.adresse || ""
+        input.type=submit
+          .value=Géocoder
+      div
+        input#nofirstresults.type=checkbox.name=nofirstresults.value=true
+          :if REQUEST.query.nofirstresults == "true"
+            :attr.checked = "checked"
+        | &nbsp;
+        label.for=nofirstresults Afficher les résultats multiples
+
+
+  :if REQUEST.query.adresse
+    section.stopf
+
+      section#results.floatl
+        h2
+          button.floatr
+            .onclick=recenterMap()
+            |Recentrer
+          |Résultats
+        --
+         - Cliquer sur le rectangle d’un résultat pour centrer la carte sur le point.
+         - Les résultats des différents services sont listés par ordre aléatoire entre eux.
+         - Le géocodage IGN se fait ici en mode {i adresse + lieu-dit}
+         - Le mode {i autocomplétion} est désactivé pour le géocodage IGN et BAN
+
+        div#result-container
+
+      div#map
+
+    script.type=text/javascript init_geocodage("{:process REQUEST.query.adresse.replace(/"/, '\"')}", {:process REQUEST.query.nofirstresults || false})

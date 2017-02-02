@@ -1,0 +1,171 @@
+page
+  .titre-complet = Plateforme Nationale de Géocodage
+
+  //- .stylesheets[] = home
+
+  //- :: boutons-accueil
+  //-   div.actions
+  //-     a.ibutton.contribuer.href=contribuer/ CONTRIBUER{br}AU PROJET
+  //-     a.ibutton.consulter.href=benchmark/ CONSULTER{br}LE BENCHMARK
+
+  h1 Co-créer le service national de géocodage
+  //- h1 Poser les exigences d’un géocodeur d’État
+  //- h1 Concertation autour de la qualité
+  //- h1 Comprendre les besoins métiers et élaborer les spécifications de la qualité attendue
+    //- span.sub Travail collaboratif sur la qualité
+    //- span.sub Évaluer la qualité des services de recherche d’adresses
+
+  draft.
+    CO-CRÉER LE GÉOCODEUR NATIONAL
+    - titre + slogans
+    - diagramme des 3 phases avec explication courte
+    - le "comment participer" ?
+    - carte de France statique et saisie de recherche
+
+  //- section
+  //-   h2 Avec les acteurs concernés
+  //-   - Plusieurs façons de contribuer
+  //-   section.half
+  //-     h3 Une collaboration
+  //-     section
+  //-       h3 Collectivités
+  //-   section.half
+  //-     h3 Contributions
+  //-     section
+  //-       h4 S’exprimer par email ou téléphone
+  //-       h4 Répondre aux questionnaires
+  //-       h4 Assister aux rencontres
+
+  //- section
+  //-   section
+  //-     section
+  //-       h4 État des lieux
+  //-     section
+  //-       h4 Spécifications
+  //-     section
+  //-       h4 Évaluation
+
+  section
+
+    -.bold La Plateforme nationale de géocodage rassemble une communauté métier d’acteurs et d’utilisateurs pour collaborer sur la qualité du géocodage en France, avec l’arrivée de la Base Adresse Nationale (BAN).
+
+    - Le géocodage est un besoin transversal des administrations, présent au quotidien dans leur procédures métier (traitement des sollicitations, organisation des interventions...). Il est également largement utilisé dans les phases d’analyses et d’élaboration des politiques publiques, pour lesquelles des traitements géostatistiques peuvent nécessiter d’utiliser des millions d’adresses.
+
+    - Aujourd’hui, de nombreux outils coexistent au sein des administrations et tournent sur des données parfois obsolètes, aux modes de mise à jour parfois incertains ou peu transparents. Le recours à des services propriétaires créent un risque de dépendance numérique.
+
+    - Issue de l’expérience des uns et des autres, la bonne compréhension des besoins métiers et des contraintes techniques est indispensable à l’élaboration de spécifications sur la qualité attendue d’un géocodeur du service public.
+
+    //- - Le projet vise à aider les administrations à profiter rapidement de l’arrivée de la Base Adresse Nationale (BAN) et de l’émergence de nouvelles générations d’outils de géocodage pour améliorer leur prise de décision.
+    //- ext.button(href=/projet/) En savoir plus
+
+  //- div.grey
+  //-   section.split-h.parties
+  //-     h2.center Le géocodeur que nous voulons...
+  //-     section.third
+  //-       h3 Ministères
+  //-     section.third
+  //-       h3 Collectivités
+
+  div.grey
+    section.split-h.parties
+      section.third
+        h3
+          a(href=/etat-des-lieux/) État des lieux
+            span.sub des outils et des pratiques
+
+      section.third
+        h3
+          a(href=/specs/) Spécifications
+            span.sub sur les attendus du service de géocodage
+
+      section.third
+        h3
+          a(href=/tests/) Évaluation
+            span.sub méthodes de notation, outils de test, benchmarks
+
+  section.split-h.contribuer
+      h2.center Comment contribuer ?
+
+      section.third
+        h3 Témoigner
+          span.sub de votre utilisation
+        - Pour repérer les insatisfactions et identifier les solutions, partageons entre nous les expériences de terrain. Contribuez à l’état des lieux par votre témoignage !
+        //- div.actions
+        //-   a.button.arr(href=/etat-des-lieux/temoigner) Faire un retour d’expérience
+
+      section.third
+        h3 Commenter
+          span.sub les avis et propositions
+        - Les articles publiés sur ce site sont des propositions et des études de fond. Ils ont besoin de consensus ou de débats. Au bas de la page, indiquez {q je suis d’accord} ou bien exprimez vos critiques ou interrogations !
+        //- div.actions
+        //-   a.button.arr(href=/articles/) Commenter les articles
+
+
+      section.third
+        h3 Proposer
+          span.sub des adresses à tester
+        - Pour aboutir à un benchmark fiable et partagé, il nous faut rassemblers un échantillon d’adresses suffisant pour couvrir les différents cas : lieux-dits, CEDEX, etc.
+        //- div.actions
+        //-   a.button.arr(href=/tests/) Alimenter le benchmark
+
+  div.grey
+    section
+      h2 Les enjeux de la qualité
+      - Il a été constaté qu’en matière de géocodage, il y a un non seulement un décalage perceptible entre les attentes et les solutions, mais aussi un manque de clarté sur les résultats attendus. On citera par exemple : tolérances des orthographes approximatives, prise en compte des lieux-dits, actualité des données...
+      - Il est donc nécessaire de {b faire un travail de formalisation des critères de qualité}, évoluant vers un standard qui définisse ce qu’on entend par {q géocodage de qualité} en rapport avec les besoins des administrations et permettant :
+      --
+       - aux {b utilisateurs}, d’évaluer les solutions disponible sur une base objective ;
+       - aux {b développeurs}, de saisir la vue d’ensemble du besoin et prioriser leurs développements ;
+       - aux {b intégrateurs}, de consolider les recettes de livraison sur des tests formels et qualifiés.
+
+
+  section.acteurs.split-h
+    h2 Porteurs du projet
+
+    section.quarter
+      img.height=170
+        .src = /assets/img/meem.jpg
+        .alt = MEEM
+      h3 Porteur du projet
+
+    section.quarter
+      img.height=170
+        .src = /assets/img/ign.png
+        .alt = IGN
+      h3 Porteur opérationnel du projet
+
+    section.quarter
+      img.height=170
+        .src = /assets/img/sgmap.png
+        .alt = SGMAP
+      h3 Contributeur au suivi technique et financier du projet
+
+    section.quarter
+      img.height=170
+          .src = /assets/img/caisse-des-depots.png
+          .alt = Groupe Caisse des dépôts et consignations
+      h3 Gestion administrative et financière du Programme d’Investissements d’Avenir
+
+    div.actions
+      a.button.arr(href=/contexte/) En savoir plus sur le contexte
+
+  //-----------------------------------------------------------
+
+  //- section
+  //-   h2 La qualité : pivot entre besoins d’exploitation et faisabilité technique
+
+  //- div.grey
+  //-  section
+  //-   h2 La méthode
+  //-   //- h2 Feuille de route
+  //-   //- h2 Mieux satisfaire aux besoins des administrations : une feuille de route en 5 étapes
+  //-   - Pour assurer l’exhaustivité des besoins étudiés, tirer profit des expériences et faciliter la réutilisation des travaux, la démarche se veut {b ouverte} à la façon d’une concertation publique et {b transparente} à l’instar des développements communautaires de logiciels libres.
+  //-   -0.bold
+  //-    - {a(href=/diagnostic/) Diagnostic des usages}
+  //-    - {a(href=/specs/) Formalisation des spécifications}
+  //-    - {a(href=/tests/) Développement de tests automatisées}
+  //-    - Audit des solutions du marché
+  //-    //- - Prescription des offres de géocodage conformes aux attentes de l’Etat
+
+  //-   section.actions
+  //-     a.button.arr(href=/methodologie/) méthodologie

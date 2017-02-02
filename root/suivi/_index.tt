@@ -1,0 +1,13 @@
+page
+  .titre = Suivi
+
+  h1#top-title Suivi du projet
+
+  section
+    h2 Compte-rendus d’avancement
+
+    --
+     -
+       a
+         .href=20160913-compte-rendu-avancement
+         | Compte-rendu d’avancement du 13 septembre 2016

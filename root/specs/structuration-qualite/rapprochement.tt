@@ -1,0 +1,92 @@
+page
+  .titre = Rapprochement-Spec
+
+    h1 Qualité du moteur de rapprochement
+
+    section
+      - La qualité du moteur de géocodage se compare avec la capacité d’un cerveau humain à identifier une adresse sur un territoire parfaitement connu, c’est-à-dire doté de fonctions complexes comme par exemple :
+      --
+     - l’aptitude à rapprocher les mots malgré les erreurs et abréviations ;
+     - l’aptitude à reconnaître la structure de l’adresse : ne pas confondre, par exemple, la {adr rue de Paris} à Saint-Mandé et la {adr rue de Saint-Mandé} à Paris ;
+       - l’aptitude à comprendre les amalgames de proximité, comme par exemple : {adr 2 place de la Défense 92800 PARIS}.
+
+      - Le moteur de rapprochement doit être d’autant plus puissant et flexible que les adresses en entrées sont inexactes ou non-conformes à la norme choisie (administrative ou postale) et que le référentiel d’adresses sera verticalement incomplet (par exemple, s’il manque les lieux-dits).
+
+    div.grey
+     section
+      h3 Recherche libre et structurée
+
+      - La recherche structurée consiste à soumettre au géocodage des adresses en séparant les composants : numéro, voie, lieu-dit, code postal, libellé/commune. Il faut pour cela que les adresses soient ainsi structurées en amont (par opposition à une colonne ou champ de recherche unique).
+
+      - La recherche structurée présente moins de risque d’ambiguité (notamment entre la {adr rue de Paris} à Saint-Mandé et la {adr rue de Saint-Mandé} à Paris) mais n’accepte, en corollaire, aucune confusion entre les champs, portant un degré d’exigence élevé sur les adresses recherchées. Dans la pratique, cette exigence se traduit soit par des coûts humains de validation/correction (à posteriori sur un fichier client par exemple), soit par une ergonomie du formulaire : auto-complétion des champs, validation par webservices, etc.
+
+      h4 Recherche et filtres
+
+      - La recherche peut être à la fois libre et structurée, si l’on souhaite par exemple restreindre la recherche à un département donné. Le filtre peut être spécifié à tout niveau administratif, comme la commune ou le quartier.
+
+      - Le filtre peut être indispensable dans le cas d’un géocodage territorial, limité à un département ou une communauté de communes, par exemple. Un fichier d’adresses {i locales} peut être naturellement peu rigoureux sur les codes postaux par exemple, du fait qu’il est relatif à un département. Le service de géocodage, s’il est national ou international, a besoin de le savoir pour éviter toute confusion avec des adresses en d’autres territoires.
+
+      - Le concept de {i filtre} ne doit pas être confondu avec celui de {i préférence}, qui ne fait qu’indiquer une priorité.
+
+
+    section
+      h3 Tolérance aux erreurs de frappe
+
+      - La tolérance aux erreurs de frappe, aux abréviations et autres orthographes dérivées ont été abordés sous l’angle de la qualité des adresses en entrée. Le moteur de rapprochement doit accepter ces formes alternatives d’écriture, à l’aide de dictionnaires de synonymes si nécessaire.
+
+      - On peut raisonnablement s’attendre à ce que des fautes d’orthographe mineures soient tolérées, puisque l’utilisateur humain ne peut garantir la perfection de son orthographe dans les circonstance de l’écriture au clavier d’ordinateur. Les fautes légères induisant des ambiguités (par exemple : {adr 15 Rue Charrière 75011 Paris} et {adr 15 Rue Lacharrière 75011 Paris}) restent relativement rares.
+
+    div.grey
+     section
+      h3 Correspondance partielle
+
+      - Il s’agit de l’aptitude du géocodeur à ignorer les mots qui empêchent une correspondance pertinente, si cela permet d’aboutir à une correspondance globalement satisfaisante.
+
+      - Ce besoin a deux origines principales.
+
+      - D’abord, dans le {b référentiel d’adresses}, de la difficulté à garantir :
+      --
+       - l’exhaustivité {i horizontale} car si l’adresse manque dans le référentiel, le moteur pourra ignorer les composant spécifiques (numéro, voie) pour identifier le quartier ou la ville ;
+       - l’exhaustivité {i verticale} car si le lieu-dit précisé n’existe pas dans le référentiel, il doit être ignoré.
+
+      - Ensuite, dans l’adresse recherchée, des précisions privées telles que le nom propre du lieu, précision de bâtiment, boîte postale, etc. peuvent être légitimement présentes et notamment dans une liste d’adresses non-structurées.
+
+      - Cette aptitude est également nécessaire pour les appelations alternatives : l’{adr Avenue du Général de Gaulle} doit être trouvée si l’on cherche l’{adr Avenue Charles de Gaulle}.
+
+    section
+      h3 Préférence géographique
+      - La préférence géographique consiste à donner une précision géographique en paramètres de la recherche, c’est-à-dire
+      --
+       - les coordonnées d’un point central avec le rayon, ou
+       - les coordonnées délimitant un rectangle.
+
+      - La {i préférence} n’est pas un {i filtre} : il priorise les résultats appartement à la zone géographique demandée. C’est utile {pi sinon indispensable} en cas de recherche interactive sur interface cartographique.
+
+    //- section
+    //-   h3 Internationalisation
+    //-   - Il y a l’internationalisation de la requête (possibilité de soumettre une adresse
+
+    div.grey
+     section
+      h3 Richesse et flexibilité du résultat
+
+      h4 Système de référence spatial (SRS)
+      - Il est utile (mais pas nécessaire) de pouvoir disposer des coordonnées géographiques dans différents SRS, par exemple {i Lambert 93} pour la France métropolitaire ou les zones {i Lambert coniques conformes} et pas seulement le système mondial {i WGS 84}.
+      - Si un seul SRS est proposé, il doit être le {i WGS 84} du fait de l’universalité des API et outils logiciels susceptibles d’exploiter ces coordonnées, sauf besoin particulier.
+
+      h4 Adresse structurée
+      - L’aptitude d’un géocodeur à retourner les composants de l’adresses sous forme de champs séparés est indispensable car une adresse est nécessairement structurée. Sans cette information, la réponse serait incomplète car sans adresse sémantique.
+
+      h4 Adresse formatée
+      - L’adresse formatée sur une ligne est d’autant plus utile qu’il s’agit d’un besoin fréquent et que les règles de formatage ne se résument pas à une concaténation triviale.
+
+      h4 Attributs supplémentaires
+      - Les attributs supplémentaires font la valeur ajoutée de services additionnels : altitude, parcelle cadastrale, IRIS... Le géocodage est un service {i fonctionnel} neutre au sens métier (adresse ↔ géographie) et de nombreux services de plus haute valeur ajoutée ({i fonctionnelle} ou {i métier}) peuvent être proposés.
+      - Ces attributs comptent dans la valeur du service mais n’entrent pas dans le champ de la présente étude. Il faut cependant en préserver le potentiel par la stabilité des identifiants.
+
+    section
+      h3 Coefficient de correspondance
+
+      - Il représente le degré de correspondance entre l’adresse recherchée et le résultat identifié. Si l’adresse soumise est exacte et complète, le coefficient se rapproche de 100 %. Une baisse de cette valeur témoigne d’un résultat plus éloigné de ce point de vue.
+
+      - Ce coefficient ne doit pas être confondu avec l’indicateur de précision et de fiabilité dont il est question plus haut.

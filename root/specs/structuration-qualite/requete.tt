@@ -1,0 +1,101 @@
+page
+  .titre = Requête-Spec
+
+    h1 La qualité de l’adresse en entrée
+
+    section
+      - Bien entendu, une adresse invalide n’est pas censée être {i géocodable}. Trouver la localisation physique d’une adresse suppose que le lieu existe sur le territoire.
+      - Mais qu’est-ce qu’une adresse valide ? On distinguera l’existence de l’adresse en tant que lieu et la validité du formattage de cette adresse, c’est-à-dire la façon de l’écrire.
+
+    div.grey
+     section
+      h3 Une adresse {i géographiquement} valide
+
+      - L’adresse que l’on souhaite géocoder désigne nécessairement un lieu géographique, dont on cherche à obtenir les coordonnées. On exclut pour l’instant des localisants territoriaux surfaciques (tels qu’une commune ou un département en soi) pour se focaliser sur les {i points adresses} localisés par un point géographique précis à l’échelle de la rue.
+
+      - La norme en vigueur est celle de l’adresse géo-postale, désignant le lieu à travers une commune, un lieu-dit, une voie et un numéro de voie. Sont exclues les adresses postales non-géographique, c’est-à-dire les adresses avec un libellé d’acheminement en CEDEX et une boîte postale ne permettant pas d’établir la localisation géographique.
+
+      - Une adresse en CEDEX n’est pas nécessairement non-géographique : si la voie est spécifiée et la commune unique en France, elle est géocodable. Le code postal est quant à lui dans une zone grise, appartenant à la norme postale mais correspondant à une zone géographique : ses premiers chiffres, en tout cas, correspondent rigoureusement au département afin d’identifier la commune de façon unique en France.
+
+      - Le sujet n’est pas trivial : dans l’absolu, une adresse non-géographique est une adresse permettant l’acheminement de courrier mais totalement dissocié de tout concept de lieu. Au contraire, si la difficulté est causée par la désignation postale de l’adresse, alors c’est une limitation du référentiel de données exploitables.
+
+      div.actions
+        //- a.button.href=201609-adresses-geographiques-et-postales/ Article détaillé : adresses géographiques et postales
+
+      //- style.type=text/css.
+      //-   .adr-geo { background: #afa; }
+      //-   .adr-postal { background: #faa; }
+
+      //- - Voici, par exemple, une adresse géo-postale (les éléments graphiques sont en {span.adr-geo vert} et les éléments posatux en {span.adr-postal rouge}) :
+      //- pre
+      //-   span.adr-geo 6 et 8 Avenue Blaise Pascal
+      //-   span.adr-geo Cité Descartes
+      //-   span.adr-geo Champs-sur-Marne
+      //-   span.adr-postal 77455 Marne la Vallée
+      //-   span.adr-postal Cedex 2
+
+
+    section
+      h3 Conformité du formattage
+
+      h4 Formatage postal
+      - La norme AFNOR XPZ 10-011 définit le formattage des adresses postales en 6 lignes (7 avec le pays) :
+      -0
+       - identité du destinataire
+       - complément d’identification du destinataire ou du point de remise
+       - complément d’identification du point géographique
+       - n° et libellé de voie
+       - lieu-dit ou commune d’implantation ou service particulier de distribution
+       - code postal et libellé de destination
+
+      - Seules les lignes 3 à 6 sont à spécifier pour le géocodage. Les lignes précédentes peuvent être tolérées ou non.
+
+      h4 Adresse sur une ligne
+      - Lorsque l’adresse est écrite dans un champ de recherche, on peut séparer ou non les {q lignes} par des virgules.
+      - Il faut, en principe, respecter l’ordre des composants de l’adresse pour lever toute ambiguité, par exemple :
+      --
+       - entre {adr rue de Paris} à Saint-Mandé et {adr rue de Saint-Mandé} à Paris ;
+       - entre la commune et le lieu-dit ;
+       - entre le code postal et le numéro de rue, potentiellement grand en cas de numéro métrique.
+
+      h4 Adresses à la norme administrative
+      - Le lieu est désigné en formule libre et naturelle, comme : {q L’IGN est situé au 73 avenue de Paris à Saint-Mandé (Val-de-Marne)}.
+      - Cette notation notamment utilisée dans les textes légaux, où la désignation d’un lieu ne peut dépendre du référentiel postal, qui n’est pas contrôlé par le législateur. Elle doit s’appuyer sur les structures administratives : numéro et voie (issus d’un arrêté municipal), commune et département (décidés par le Conseil d’Etat). La désignation du département (nom ou code) est nécessaire pour lever toute embiguité sur le nom de la commune.
+      - La structuration minimale mais non-ambigue d’une adresse se fait ainsi :
+      --
+       - nom du lieu dans la commune (numéro et voie ou lieu-dit ou tout autre localisation unique dans la commune)
+       - commune dans le département
+       - département (en France)
+
+
+    div.grey
+     section
+      h3 Exactitude
+
+      h4 Tolérance aux orthographes alternatives et fautes d’orthographe
+      - Si pour une commune, un lieu-dit ou une voie, il existe une orthographe officielle, plusieurs variantes peuvent néanmoins s’écrire. Par exemple :
+      --
+       - {adr la Ferté-Alais} / {adr la Ferté Alais}
+       - {adr St-Rémy-lès-Chevreuse} / {adr Saint-Rémy-lès-Chevreuse}
+       - {adr avenue Charles de Gaulle} / {adr avenue du Général de Gaulle}
+      - Dans ce cas, il y a plusieurs orthographes {i valides}, dont l’une est la référence officielle.
+      - On peut exiger que le service de géocodage {i tolère} des fautes d’orthographe mineures qui ne nuisent aucunement à l’information, comme oublier un {s s} en fin de mot ou omettre une lettre doublée. Par exemple :
+      --
+       - {adr la Ferté-Alais} / {adr la Ferté-Alai}
+       - {adr Alfortville} / {adr Alfortvile}
+      - Des fautes plus prononcées doivent-elles être tolérées ? Cela dépend de plusieurs choses :
+      --
+       - l’ambiguité potentielle de l’adresse recherchée, si celle-ci peut correspondre à de multiples résultats
+       - l’exigence portée sur la capacité du géocodeur à identifier l’adresse, basé sur un calcul de proximité textuelle et/ou sonore
+       - l’exactitude moyenne du jeu d’adresse à géocoder et le risque induit par les faux résultats
+
+      h4 Complétude de l’adresse
+      - Il existe 3 niveaux de complétude :
+      --
+       - la complétude de l’{b information}, correspondant aux adresses ne souffrant d’aucune ambiguité ni d’inexactitude, sans nécessairement respecter la norme ;
+       - la complétude de la {b norme} : administrative (lieu, commune, département) ou postale (lieu-dit, libellé d’acheminement) et respectant le libellé officiel de la voie, du lieu-dit et de la commune.
+       - la complétude du {b point géographique}
+      - Les adresses abrégées, par exemple {adr rue Baudelaire} au lieu de {adr rue Charles Baudelaire}, entrent dans la première catégorie car il ne s’agit pas de faute d’orthographe mais d’une omission de changeant pas l’information.
+      - Les adresses sans code postal (ni département) appartiennent également à la première catégorie seulement si la commune indiquée est unique en France. Si des communes de nom dérivé existent (comme entre {adr Paris} et {adr Paris-l’Hôpital} en Saône-et-Loire), on peut considérer que le cas est ambigu ou soumettre cette considération à l’exactitude de la correspondance des noms de voie.
+      - La complétude de la norme impose quant à elle le respect d’une structure bien définie, qu’il s’agisse d’un standard ou d’une structuration particulière (numéro, voie, commune, code département, etc.).
+      - La complétude du {i point géographique} se réfère à ce qu’une adresse est identifiée par un ponctuel désignant une ou plusieurs parcelles cadastrales possédant ce qu’on appelle administrativement une {i adresse}. Une recherche de nom de ville sera traitée différemment car il ne s’agit pas d’une adresse, mais d’un territoire administratif de niveau supérieur qui peut être identifié par un ponctuel (lieu de la mairie ou centroïde du polygone) ou par une surface. Il ne s’agit alors plus d’une {i adresse}, bien que le texte recherché puisse être exact et complet au niveau territorial.

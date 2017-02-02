@@ -1,0 +1,14 @@
+/* @import url(http://fonts.googleapis.com/css?family=Dosis:400,200); */
+
+@font-face {
+  font-family: 'Dosis';
+  font-style: normal;
+  font-weight: 200;
+  src: local('Dosis ExtraLight'), local('Dosis-ExtraLight'), url(Dosis-ExtraLight.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Dosis';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Dosis Regular'), local('Dosis-Regular'), url(Dosis-Regular.ttf) format('truetype');
+}

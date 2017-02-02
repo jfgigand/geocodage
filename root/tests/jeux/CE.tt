@@ -1,0 +1,5 @@
+jeu#CE
+
+  titre Nom de voie contenant un mot parmi les types de voies standards
+
+  definition Adresses dont le nom de {b voie} contient le nom d’un {b type} de voie, par exemple {adr Chemin de la ruelle}

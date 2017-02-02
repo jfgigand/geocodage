@@ -1,0 +1,126 @@
+:process.ParseTextree
+  :process.ReadFile
+    fs:glob etat-des-lieux/referentiels/_index.templates.tt
+
+//- https://www.etalab.gouv.fr/consultation-spd
+
+page
+  .titre = Référentiels-État des lieux
+  style.
+    h3 { margin: 0; }
+    .producteur { margin: 1em 0; }
+
+  h1 Les référentiels adresses
+
+  draft.
+    autres infos :
+    - licences
+    - sources
+    - contenu
+
+  referentiels
+    .type = Bases d’adresses et de lieux-dits à l’échelle nationale
+
+    referentiel
+      .titre = Base Adresse Nationale
+      .sigle = BAN
+      .nom-producteur = IGN, La Poste, SGMAP, OpenStreetMap
+      .url = http://adresse.data.gouv.fr/
+
+      draft.
+        en cours de constitution
+        licences
+
+
+    referentiel
+      .titre = BD Adresse
+      .nom-producteur = Institut national de l’information géographique et forestière
+      .sigle-producteur = IGN
+      .url = http://professionnels.ign.fr/bdadresse
+
+      draft.
+        - RGE
+
+
+    referentiel
+      .titre = BD Topo
+      .nom-producteur = Institut national de l’information géographique et forestière
+      .sigle-producteur = IGN
+      .url = http://professionnels.ign.fr/bdtopo
+
+
+    referentiel
+      .titre = Répertoire d’immeubles localisés
+      .sigle = RIL
+      .nom-producteur = Institut national de la statistique et des études économiques
+      .sigle-producteur = INSEE
+      .url = https://www.insee.fr/fr/metadonnees/definition/c1815
+
+
+    referentiel
+      .titre = Fichier annuaire topographique initialisé réduit
+      .sigle = FANTOIR
+      .nom-producteur = Direction générale des finances publiques
+      .sigle-producteur = DGFIP
+      .contenu = commune, les voies, lieux-dits et ensembles immobiliers.
+      .url = https://www.data.gouv.fr/fr/datasets/fichier-fantoir-des-voies-et-lieux-dits/
+
+      draft.
+        anciennement RIVOLI
+        Répertoire Informatisé des VOies et LIeux-dits
+        https://fr.wikipedia.org/wiki/FANTOIR
+
+
+    referentiel
+      .titre = Base Adresse Nationale Ouverte
+      .sigle = BANO
+      .nom-producteur = OpenStreetMap
+      .sigle-producteur = OSM
+      .url = http://openstreetmap.fr/bano
+
+    referentiel
+      .titre = HEXAVIA / HEXACLE
+      .nom-producteur = La Poste
+      .url = http://www.laposte.fr/entreprise/produits-et-services/sna-gamme-geographique
+
+  div.grey
+
+   referentiels
+    .type = Bases de données foncières
+
+    referentiel
+      .titre = Fichiers MAJIC
+      .nom-producteur = Direction générale des finances publiques
+      .sigle-producteur = DGFIP
+      .url = http://www.geoinformations.developpement-durable.gouv.fr/fichiers-fonciers-r549.html
+      //- .url = http://www.geoinformations.developpement-durable.gouv.fr/retraitement-des-donnees-par-le-cerema-nord-r888.html
+
+    referentiel
+      .titre = BD Parcellaire
+      .nom-producteur = Institut national de l’information géographique et forestière
+      .sigle-producteur = IGN
+      .url = http://professionnels.ign.fr/bdparcellaire
+
+    referentiel
+      .titre = Représentation parcellaire cadastrale unique
+      .sigle = RPCU
+      .nom-producteur = Institut national de l’information géographique et forestière
+      .sigle-producteur = IGN
+      .url = http://professionnels.ign.fr/rpcu
+
+
+  referentiels
+    .type = Bases administratives
+
+    referentiel
+      .titre = Code officiel géographique
+      .sigle = COG
+      .nom-producteur = Institut national de la statistique et des études économiques
+      .sigle-producteur = INSEE
+      .url = https://www.insee.fr/fr/information/2016807
+
+    referentiel
+      .titre = ADMIN EXPRESS
+      .nom-producteur = Institut national de l’information géographique et forestière
+      .sigle-producteur = IGN
+      .url = http://professionnels.ign.fr/adminexpress

@@ -1,0 +1,171 @@
+:: icon
+  img.floatl.width=60
+    :attr.+ = icon.attributes
+
+page
+  .titre = État des lieux
+
+  h1 Connaître l’existant : pratiques, outils, besoins
+    //- span.sub Rassembler la matière
+  //- h1 Enquêter sur les usages
+  //- h1 Diagnostic des usages
+
+  section
+    //- h2.center Enquêter sur les usages
+
+    section.half
+      h3 Connaître les contextes, recencer les insatisfactions
+
+      - Derrière le {q géocodage d’adresses en coordonnées géographiques}, il y a des contextes d’exploitation très différents : géocodage interactif pour services de sécurité, sur France entière ou centrée sur une agglomération, limitée à un département...
+
+      - Demander {q quelle est l’épine dans le pied} dans l’utilisation de géocodage permet de cibler facilement les limitations qui opèrent dans le contexte d’utilisation réel des services de géocodage. Cela évite un classement précoce des besoins.
+
+      div.actions.style=margin-bottom:2em
+          a.button(href=./questionnaire) Ouvrir le questionnaire
+          a.button(href=/contact/) Prendre contact avec l’animateur
+
+      h3 Recensements
+      section
+        icon
+          .src = modes/icon.svg
+        h4 {a(href=modes/) Modes et types de géocodage}
+        - Plusieurs types (adresse, parcelle cadastrale, zonage...) et modes (direct, inverse, autocomplete) sont possible.
+      section
+        icon
+          .src = contextes/icon.svg
+        h4 {a(href=contextes/) Contextes d’exploitation}
+        - Localisation cartographique, cartographie des risques, étude statistique, géomarketing...
+
+        //- Street Addressing and the Management of Cities
+
+      //- - Comment traiter les ambiguités dans le cadre d’un géocodage de masse ? Quel impératif de fiabilité et de rapidité ?
+
+      //- - Une enquête métier auprès des utilisateurs est indispensable pour ne pas ignorer des aspects importants ou des configurations d’utilisation qui font la complexité opérationnelle sur le terrain.
+
+    //- section.half
+    //-   - Le géocodage n’est en effet pas nouveau et la plupart des usagers (administrations, entreprises et grand public) disposent d’une expérience dans ce domaine, sur laquelle on peut se baser pour recenser non pas ce qu’il faut mais ce qu’il manque dans les outils de géocodage.
+
+    //-   - C’est un moyen efficace pour se faire une idée de la qualité attendue.
+
+    section.half
+      h3 Inventaires
+      section
+        icon
+          .src = referentiels/icon.png
+        h4 {a(href=referentiels/) Les référentiels de données}
+        - Outre les points adresses et tronçons de voie, d’autres bases de données sont nécessaires au géocodage : lieux-dits, limites administratives... Voici une liste non-exhaustive de bases de données servants à géocoder.
+
+      section
+        icon
+          .src = solutions/icon.png
+        h4 {a(href=solutions/) Les solutions de géocodage}
+        - Géocodeur de la BAN (Addok), du Géoportail IGN, solutions cloud telles Google Maps ou HERE...   Il existe un certain nombre de solutions de géocodage sur étagère ainsi que des solutions à intégrer avec ses propres données.
+
+      section
+        icon
+          .src = standards/icon.svg
+        h4 {a(href=standards/) Standards et rapports sur le géocodage et l’adresse}
+        - Adresse INSPIRE, GeocodeJSON, Norme AFNOR, rapports sur l’adressage...
+
+      section
+        icon
+          .src = projets/icon.svg
+        h4 {a(href=projets/) Projets annexes}
+        - Base Adresse Nationale (BAN), Groupe de travail Adresse de l’AFIGEO, EURADIN, GeoPlace...
+
+      //- http://wiki.openstreetmap.org/wiki/Open_Data_License/Geocoding_-_Guideline
+
+  div.grey
+   section
+    section.half
+      h3 Témoignages
+      section
+        h4 {a(href=../participants/seine-saint-denis/) Conseil départemental de Saine-Saint-Denis (93)}
+        - David Delhorme est géomaticien au département de Seine-Saint-Denis (CD93). Dans cette courte interview, il nous fait part de son expérience de géocodage pour les besoins du département, ainsi que de développeur d’un frontal web interne de géocodage de masse avec correction d’erreur.
+
+      section
+        h4 {a(href=../participants/ign/api-service-geoportail) IGN - Service de géocodage du Géoportail}
+        - Thibault Coupin est chef de la division Services au pôle Géoportail. Entre autres missions, il a intégré le service de géocodage du géoportail. Dans cette interview, il nous en détaille les principes de fonctionnement et de modélisation des données sources.
+
+      section
+        h4 {a(href=../participants/ign/prestations-sur-mesure) IGN - Prestations de géocodage sur mesure}
+        - Didier Bouteloup dirige le département des produits externes à l’IGN. Avec Etienne Dumont, ils répondent aux demandes spécifiques de clients portant sur le géocodage d’importants fichiers d’adresses.
+
+    section.half
+      h3 Études
+      section
+        h4 {a(href=difference-entre-geocodeur-ign-et-ban/) Quelles différences entre le géocodeur IGN et le géocodeur BAN&nbsp;?}
+        - La Base Adresse Nationale (BAN) se présente en tant que base de données accompagnée d’un service de géocodage spécifique. L’Institut national de l’information géographique et forestière (IGN) propose historiquement des offres de géocodage (dont 2 nouveaux produits en septembre 2016). L’IGN est l’un des acteurs de la BAN mais l’articulation de ces services et des données d’adresses en amont n’est pas précisée, semant la confusion chez les utilisateurs.
+
+      section
+        h4 {a(href=indicateur-de-qualite/) Indicateur de qualité : oui mais lequel ?}
+        - Un géocodage retourne pour chaque résultat un coefficient de correspondance, qu’on interprète souvent comme {i indice de confiance} pour son exploitation. Est-ce pour autant une indication sur la précision géographique du point ?
+
+      section
+        h4 {a(href=../specs/structuration-qualite/) Comment définir la qualité globale d’un géocodeur ?}
+
+        - Un service de géocodage repose sur une base d’adresses de référence : c’est un moteur de recherche qui va tenter d’apparier l’adresse recherchée aux adresses référencées dans la base de référence. La qualité se répartit sur ces 3 pôles :
+        --
+         - Qualité de l’adresse en entrée
+         - Qualité du référentiel adresse
+         - Qualité du moteur de rapprochement
+
+
+   //- section
+   //-  h2.center Le Tour de France du géocodage
+   //-    span.sub Octobre à décembre 2016
+
+   //-  //- - L’Etat central et décentralisé représente la cible prioritaire de la mission qualité portée par la plateforme nationale de géocodage.
+
+   //-  section.half
+   //-    h3 Destinations
+
+   //-    section
+   //-      h4 Collectivités territoriales
+   //-      - Conseils et services départementaux d’incendie et secours (SDIS), services de police, services municipaux... Les collectivités ont des besoins opérationnels de géocodage en contexte administratif (formulaires, fichiers d’adresses) et d’intervention (temps réel, mobilité). Opérant sur un territoire précis, les collectivités ont une approche pratique concrète du géocodage et représent ainsi la première expertise sur le sujet.
+
+   //-    section
+   //-      h4 Ministères et institutions publiques
+   //-      - Les ministères publics, secrétariats, commissariats et instituts qui constituent l’administration nationale font une exploitation à l’échelle nationale du géocodage d’adresses : service des impôts, études sociologiques et économiques...
+
+   //-    section
+   //-      h4 Entreprises et associations
+   //-      - De façon moins prioritaire, les entreprises et associations sont elles aussi visées pour le reccueil de besoins.
+
+   //-  section.half
+   //-    h3 Moyens d’échanges
+
+   //-    section
+   //-      h4 Questionnaire en ligne
+   //-      - Le questionnaire s’articule autour de questions générales ouvertes et d’autres plus spécifiques et pragmatiques sur le géocodage. Il invite également à préciser comment vous souhaitez contribuer à la démarche.
+   //-      div.actions
+   //-        a.button(href=./questionnaire) Ouvrir le questionnaire
+
+   //-    section
+   //-      h4 Entretiens et rendez-vous
+   //-      - Un entretien téléphonique permet d’échanger sur le sujet et envisager, les cas échéant, un rendez-vous présentiel pour approfondir.
+   //-      div.actions
+   //-        a.button(href=/contact/) Prendre contact avec l’animateur
+
+   //-    section
+   //-      h4 Échanges en ligne
+   //-      - Les échanges en ligne complètent les entretiens et retours de questionnaire pour confronter les expérience et aboutir à un diagnostic clair.
+   //-      - Le contenu des échanges pourra être consulté sur la plateforme nationale de géocodage, mais la contribution aux échanges et la gestion du compte utilisateur se font {espace-echange sur la plateforme GitHub}.
+
+   //-      div.actions
+   //-        a.button.target=_blank
+   //-          :.href = png_url_issues
+   //-          | Contribuer aux échanges sur GitHub
+
+  //- section
+  //-   h2 Articles d’études et réflexions
+
+  //-   section
+  //-     h3 {a(href=difference-entre-geocodeur-ign-et-ban/) Quelles différences entre le géocodeur IGN et le géocodeur BAN ?}
+
+  //-     - La Base Adresse Nationale (BAN) se présente en tant que base de données accompagnée d’un service de géocodage spécifique. L’Institut national de l’information géographique et forestière (IGN) propose historiquement des offres de géocodage (dont 2 nouveaux produits en septembre 2016). L’IGN est l’un des acteurs de la BAN mais l’articulation de ces services et des données d’adresses en amont n’est pas précisée, semant la confusion chez les utilisateurs.
+
+  //-   section
+  //-     h3 {a(href=indicateur-de-qualite/) Indicateur de qualité : oui mais lequel ?}
+
+  //-     - Un géocodage retourne pour chaque résultat un coefficient de correspondance, qu’on interprète souvent comme {i indice de confiance} pour son exploitation. Est-ce pour autant une indication sur la précision géographique du point ?

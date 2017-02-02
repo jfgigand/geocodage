@@ -1,0 +1,7 @@
+jeu#CI
+  titre CEDEX localisable
+
+  definition L’adresse doit être associée à un lieu et pas seulement une boîte postale et contenir un nom de voie en ce sens
+
+  exemples
+    - 73 avenue de Paris 94165 SAINT-MANDÉ CEDEX

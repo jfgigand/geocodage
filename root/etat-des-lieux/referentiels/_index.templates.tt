@@ -1,0 +1,32 @@
+
+:on referentiels
+
+  section
+    h2
+      :process referentiels.attributes.type
+
+    :on referentiel
+
+      section
+
+        h3
+          :if referentiel.attributes.sigle
+            :process referentiel.attributes.sigle + " / "
+          :process referentiel.attributes.titre
+
+        div
+            a.target=_blank
+              :attr.href = referentiel.attributes.url
+              :process referentiel.attributes.url.replace(/^https?:\/\//, "")
+
+        div.producteur
+          span
+            | Producteur :
+            b
+              :process " " + referentiel.attributes["nom-producteur"]
+              :if referentiel.attributes["sigle-producteur"]
+                :process " (" + referentiel.attributes["sigle-producteur"] + ")"
+
+        :process referentiel.children
+
+    :process referentiels.children

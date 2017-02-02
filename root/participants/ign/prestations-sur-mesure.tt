@@ -1,0 +1,53 @@
+page
+  .titre = Prestations IGN
+
+  h1 Prestations de géocodage sur mesure à l’IGN
+    span.sub Interview de Didier Bouteloup et Etienne Dumont
+
+  interview
+
+    intro
+      img.floatr.width=120
+        .src = /assets/img/ign.png
+
+      - Didier Bouteloup dirige le département des produits externes à l’IGN. Avec Etienne Dumont, ils répondent aux demandes spécifiques de clients portant sur le géocodage d’importants fichiers d’adresses.
+
+    question À l’IGN, vous réalisez des prestations de géocodage pour de gros fichiers d’adresses. De quels volumes s’agit-il ? Quel est le profil de vos clients ?
+    reponse
+      - Nous avons récemment  réalisé deux prestations de géocodage sur plusieurs millions d’adresses (1700 000 et 2 500 000),
+      - Avant nous ne réalisions pas ce type de prestation car nous n’avions pas d’outil de géocodage « certifié IGN » capable de réaliser de tels volumes.
+
+    question Quelle(s) solution(s) de géocodage utilisez-vous en amont ? Comment la mettez-vous en œuvre ?
+    reponse
+      - Nous utilisons le logiciel {ext(href=http://professionnels.ign.fr/geocodeurs#tab-2) monGeocodeur}.
+      - Nous lançons le logiciel en parallèle sur plusieurs postes pour améliorer la vitesse du service  (la vitesse du locigiel est d’environ 20 000 à 30 000 adresses à l’heure ; avec cette méthode, on passe à 90 000 voir 120 000 adresses à l’heure).
+      - Par contre c’est un peu plus contraignant au niveau de la réalisation de la prestation, il faut avoir à disposition des postes informatiques disponibles pour exécuter le logiciel, il fait également créer des sous-ensembles des fichiers à traiter puis les agréger pour produire les résultats finaux.
+
+    question En quoi consiste l’évaluation de la qualité des adresses de l’échantillon fourni par le client ? La qualité du fichier en entrée influe-t-elle sur le prix ?
+    reponse
+      - Lors de chaque prestation de geocodage, nous analysons la base du client.
+      - Cette étape nous permet d’estimer la qualité de la base du client et ainsi anticiper sur la qualité du geocodage.
+      - Si la base du client comporte des anomalies, nous pouvons le prévenir que le résultat du geocodage ne sera pas forcément très bon.
+      - Nous avons donc une estimation sur la qualité de composition de l’adresse du client, ensuite nous nous appuyons sur le facteur de qualité fourni en sortie par mon geocodeur.
+      - Nous passons un filtre géométrique pour vérifier que les adresses sont localisés dans le département correspondant au code INSEE ou code postal du fichier de base pour éviter les erreurs « grossieres »
+
+
+    question Vous demande-t-on de géocoder à la parcelle ou à l’IRIS ? Quelle méthode utilisez-vous, pour quel biais ?
+    reponse
+      - Le logiciel permet d’identifier le localisant parcellaire associé à l’adresse mais ne permet pas actuellement d’associer l’IRIS correspondante. La méthode d’appariement pour retrouver l’identifiant de la parcelle pourrait bénéficier des informations contenues dans le produit {e ADRESSE-PREMIUM} de l’IGN, dans la version actuellement diffusée je ne pense pas que cette méthode soit utilisée.
+
+    question Vous arrive-t-il de ne pas pouvoir répondre à une demande ? Pourquoi ?
+    reponse
+      - Pas depuis la finalisation du développement du logiciel Mongéocodeur.
+      - Les principaux freins étaient des temps de calculs prohibitifs pour des gros volumes de données.
+
+    question Quelles sont les principaux manques selon vous dans les outils de géocodage en général ?
+    reponse
+      - Certaines fonctionnalités ne sont pas encore développées dans le logiciel actuellement utilisé :
+      --
+       - Préciser en entrée le code INSEE au lieu du Code postal lorsqu’on le connait
+       - Préciser en sortie  le code INSEE par exemple ou l’adresse normalisée découpée en champs (NUM, VOIE, CP,INSEE,NOM_COMMUNE,,,)
+       - Traiter l’historique des communes
+
+    conclusion
+      - Propos recueillis le 4 janvier 2017

@@ -1,0 +1,37 @@
+
+:on participants
+
+  section
+    h2
+      :process participants.attributes.type
+
+    :var _participants_idx = 0
+
+    :on participant
+
+      section.stopf.nogrey
+
+        :if _participants_idx % 2
+          :.class = "stopf grey"
+
+        :if participant.attributes.logo
+          img.floatr
+            //- .width=300
+            :.src = participant.attributes.logo
+            :if participant.attributes["logo-width"]
+              :.width = participant.attributes["logo-width"]
+
+        h3
+          :process participant.attributes.nom
+          :if participant.attributes.sigle
+            :process " (" + participant.attributes.sigle + ")"
+
+        :: agent
+          li
+            :process agent.attributes.nom
+
+        :process participant.children
+
+      :var _participants_idx = _participants_idx + 1
+
+    :process participants.children

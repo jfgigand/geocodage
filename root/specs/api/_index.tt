@@ -1,0 +1,20 @@
+page
+  .titre = API-Specs
+
+  h1 Spécifications de l’api de géocodage
+
+  section
+    h2 Géocodage unitaire : 2 familles d’API HTTP
+
+    section
+      h3 JSON
+
+    section
+      h3 OpenLS
+
+  section
+    h2 Géocodage de masse
+
+    - L’IGN développe MesAdresses et MonGeocodeur en tant qu’applications. N’offrant pas d’API, elles sont abordées dans l’article {a(href=../batch/) Interfaces de géocodage de masse}
+
+    h3 L’exemple de {e adresse.data.gouv.fr/csv}

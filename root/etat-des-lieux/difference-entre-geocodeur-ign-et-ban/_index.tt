@@ -1,0 +1,104 @@
+page
+  .titre = Différences entre géocodeurs IGN et BAN/Etalab
+  .github-issue = 7
+
+  h1 Quelles différences entre le géocodeur IGN et le géocodeur BAN ?
+
+  intro
+      - La Base Adresse Nationale (BAN) se présente comme base de données accompagnée d’un service de géocodage spécifique. L’Institut national de l’information géographique et forestière (IGN) propose historiquement des offres de géocodage, dont 2 nouveaux produits en septembre 2016. L’IGN est l’un des acteurs de la BAN mais l’articulation de ces services et des données d’adresses en amont n’est pas précisée, semant la confusion chez les utilisateurs.
+
+  section
+      h2 Géocodeur IGN ou {q de la BAN} : de quoi parle-t-on ?
+      - Côté IGN, il existe différents services de géocodage, dont le Géoportail et les API. Le géocodage de masse est assuré par les applications {q Mon Géocodeur} (pour les professionnels) et {q Mes Adresses} (pour les particuliers), publiées en septembre 2016.
+      - Les outils de géocodage de la BAN ont été réalisés et publiés par Yohan Boniface (Etalab) dans le souci de rendre la BAN opérationnelle, exploitable facilement pour l’usage le plus populaire que représente le géocodage.
+      - Ces services sont affichés en version bêta tout en héritant du projet BAN le statut de « service officiel d’État », sans toutefois proposer une garantie de service. Ils sont le fruit d’un développement rapide et non concerté.
+      - Cette visibilité auprès du public a mis l’IGN en défaut, se voyant reprocher de développer ses propres outils (Mes Adresses et Mon Géocodeur), pourtant dans les tuyaux depuis 2014. Par ailleurs, le public s’interroge sur la différence entre ce géocodeur et celui de l’IGN. Le référentiel lui-même souffre d’un manque de clarté sur le lien entre la BD adresse, la BAN et la BANO ainsi que les licence « repartage » et ODbL.
+
+      //- - L’IGN propose du géocodage à plusieurs niveaux :
+      //- --
+      //-  - Géocodage interactif unitaire : en mode unitaire sur le {b Géoportail}
+      //-  - Géocodage interactif de masse (fichier tableur) : Mon Géocodeur, Mes Adresses
+      //-  - API : service HTTP/OpenLS
+
+  div.grey
+    section
+      h2 Des référentiels en pleine évolution
+      - La BAN aujourd’hui publiée, qui sert de base au géocodage BAN, est une version de brouillon {e v0}, issue de la {ext(ref=http://professionnels.ign.fr/bdadresse) BD Adresse} de l’IGN.
+      - Une {e v1} sera publiée à l’hiver 2016-2017 avec un enrichissement de la part des bases de données La Poste, DGFIP, {ext(href=http://openstreetmap.fr/bano) BANO} et {ext(href=http://www.insee.fr/fr/methodes/nomenclatures/cog/) COG}.
+      - Côté IGN, le géocodage d’adresses exploite la BD Adresse mais sera à terme enrichi des apports de la BAN.
+
+  //- section
+  //-   h2 Référentiel adresse
+
+  //-   section.half
+  //-     h3 IGN
+  //-     - Les différents outils de géocodage IGN utilisent le même service en amont qui exploite :
+  //-     --
+  //-      - {ext(href=http://professionnels.ign.fr/bdadresse) BD Adresse} pour le géocodage d’adresse
+  //-      - {ext(href=http://professionnels.ign.fr/bdtopo) BD Topo} pour le géocodage de lieux
+  //-      - {ext(href=http://professionnels.ign.fr/bdparcellaire) BD Parcellaire} pour le géocodage à la parcelle
+
+  //-   section.half
+  //-     h3 BAN
+  //-     - Le géocodeur de la BAN exploite la BAN en version ODbL, elle-même issue de la BD Adresse de l’IGN et
+
+  //- div.grey
+  //-   section
+  //-     h2 Performances
+
+
+  //- section
+  //-     h2 Niveau de service
+
+  //-     section.half
+  //-       h3 IGN
+
+  //-     section.half
+  //-       h3 BAN
+
+
+  //- div.grey
+  //-   section
+  //-     h2 Tolérance pour la correspondance
+
+  //- section
+  //-     h2 Paramètres de requêtage
+
+  section
+      h2 Comparatif
+      table.border.wide
+        thead
+          tr
+            th.left
+            th {i Mon Géocodeur} (IGN)
+            th {i Géocodeur {e adresse.data.gouv.fr}} (Etalab)
+
+        tbody
+          tr
+            td.bold Niveau de service
+            td Garantie de service
+            td Démonstrateur
+          tr.even
+            td.bold Formats de fichiers reconnus
+            td CSV, Excel, LibreOffice, Texte
+            td CSV
+          tr
+            td.bold Colonnes obligatoires
+            td adresse + code postal + commune {b ou} adresse sur 1 colonne
+            td aucune en particulier (flexible)
+          tr.even
+            td.bold Référentiel adresse
+            td BD Adresse ou BD Topo (lieux-dits) ou BD Parcellaire
+            td BAN v0 en version ODbL
+          tr
+            td.bold Correction interactive des adresses
+            td OUI
+            td NON
+          tr.even
+            td.bold Visualisation cartographique
+            td Carte interactive + partage + export JPEG/PNG
+            td NON
+          tr
+            td.bold Vitesse (adresses géocodées par seconde)
+            td 2,5
+            td 200

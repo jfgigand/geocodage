@@ -1,0 +1,32 @@
+page
+  .titre = Projets-État des lieux
+
+  h1 Projets annexes
+
+  section
+      h2 Relatifs au géocodage
+
+      section
+        h3 {ext(href=http://www.openstreetmap.org/#map=19/48.86170/2.37754) OpenStreetMap}
+        --
+         - {ext(href=http://wiki.openstreetmap.org/wiki/Open_Data_License/Geocoding_-_Guideline) Article {q Geocoding - _Guideline} du wiki OpenStreetMap} analysant le statut juridique des résultats de géocodage issus de données Open Database Licence (ODbL)
+
+  div.grey
+    section
+      h2 Relatifs à l’adresse
+
+      section
+        h3 {ext(href=http://adresse.data.gouv.fr/) Base Adresse Nationale (BAN)}
+
+      section
+        h3 {ext(href=http://www.afigeo.asso.fr/voir-toutes-les-news/488-pulication-du-rapport-du-gt-adresse-l-pour-une-politique-nationale-de-la-donnee-adresse-r.html) Groupe de travail Adresse de l’AFIGEO}
+        - Ce groupe de travail a produit en 2011 le rapport : {b {ext(href=http://www.afigeo.asso.fr/documentation/category/12-gt-adresse.html?download=463:afigeo-gt-adresse-rapport-2011) Pour une politique nationale de la donnée Adresse}}
+
+      section
+        h3 {ext(href=http://www.afigeo.asso.fr/international/les-projets-europeens/59-euradin.html) EURADIN} (infrastructure européenne de l’adresse)
+        - Ce projet s’est déroulé entre 2008 et 2010 dans a l ’objectif {i d’harmoniser les adresses non nominatives en Europe pour assurer leur interopérabilité et leur accès grâce à la mise en place d’une « infrastructures de données adresse » nationales ou régionales, qui serait utilisée comme référence par l’ensemble des pays européens pour l’implémentation des recommandations d’Inspire}.
+        - Le site web n’existe plus mais une page demeure sur le site de l’AFIGEO avec le compte-rendu de l’atelier du 18 janvier 2010 conduit à l’échelon national.
+
+      section
+        h3 {ext(href=https://www.geoplace.co.uk/) GeoPlace} (Royaume-Uni)
+        - GeoPlace est une entité de type {i public sector limited liability partnership}, partenariat entre la Local Government Association et l’Ordnance Survey pour organiser l’infrastructure des adresses et voies du Royaume-Uni.

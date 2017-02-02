@@ -1,0 +1,6 @@
+jeu#CH
+  titre Code postal en fin d’adresse
+  definition Recherche d’adresses avec le code postal en fin de texte, entre parenthèses ou non.
+  exemples
+    - 15 rue Lacharrière 75011
+    - 73 rue de Paris Saint-Mandé 94160

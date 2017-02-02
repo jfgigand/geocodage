@@ -1,0 +1,7 @@
+jeu#CG
+  titre Écriture des composants par ordre d’échelle
+
+  definition L’adresse est écrite en commençant par le ville puis la voie et enfin le numéro. Les composants sont séparés par des virgules. Le code postal est présent pour environ la moitié des adresses.
+
+  exemples
+    - Paris, rue Lacharrière, 15

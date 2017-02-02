@@ -1,0 +1,14 @@
+jeu#CB
+
+  titre Abréviations standards ({q {b r}ue}, {q {b av}enue}...)
+
+  definition Adresses contenant un type de voie abrégé ou non.
+
+  production Sélection d’adresses vérifiées terrain pour différents types de voies (communs à rare). Duplication de chaque adresse avec multiples appelations du type de voie.
+
+  exemples
+    - 3 rue Gambetta
+    - 3 r Gambetta
+    - 3 boulevard de Ménilmontant
+    - 3 bvd de Ménilmontant
+    - 3 bd de Ménilmontant

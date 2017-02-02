@@ -1,0 +1,113 @@
+:: ref-doc (ref)
+        section.stopf
+          :if ref.attributes.preview
+            a.target=_blank
+              :.href = ref.attributes.href
+
+              img.floatl.border
+                :.src = ref.attributes.preview
+          h4
+            a.target=_blank
+              :.href = ref.attributes.href
+              :process ref.attributes.titre
+
+          //- -
+          //-   :process ref.attributes.date
+          //- -
+          //-   :process ref.attributes.format
+          :process ref.children
+
+
+page
+  .titre = Standards-État des lieux
+
+  h1 Standards et rapports sur le géocodage et l’adresse
+
+  section
+      h2 Standards
+
+      section.half
+        h3 Sur l’adresse
+
+        ref-doc
+            .titre = Schéma de la BAN
+            .href = https://github.com/BaseAdresseNationale/ban/wiki/Ressources-de-l'API-de-gestion
+            .preview = ban-schema.png
+
+          - En travail (~ 2016-2017)
+          - Documentation hébergée sur le wiki du {ext(href=https://github.com/BaseAdresseNationale/ban/wiki) dépôt Git de la BAN}
+
+        ref-doc
+            .titre = AFNOR XPZ 10-011
+            .href = https://fr.wikipedia.org/wiki/Restructuration,_normalisation_et_validation_postale
+
+          - 19 janvier 2013
+
+        ref-doc
+            .titre = INSPIRE Data Specification on Addresses – Guidelines
+            .href = http://inspire.ec.europa.eu/documents/Data_Specifications/INSPIRE_DataSpecification_AD_v3.0.1.pdf
+            .preview = inspire-address.png
+
+          - Avril 2010
+          - PDF 177 pages
+
+        section
+          h4 ISO 19160
+          - Les normes ISO ne sont pas libres d’accès.
+          - La norme ISO 19160 est en 4 parties :
+          --
+           - {ext(href=http://www.iso.org/iso/fr/iso_catalogue/catalogue_tc/catalogue_detail.htm?csnumber=61710) Partie 1: Modèle conceptuel}
+           - {ext(href=http://www.iso.org/iso/fr/home/store/catalogue_tc/catalogue_detail.htm?csnumber=70984) Partie 2: Bonnes pratiques pour les régimes d'attribution d'adresse}
+           - {ext(href=http://www.iso.org/iso/fr/catalogue_detail.htm?csnumber=71247) Partie 3: La qualité des données d’adresses}
+           - {ext(href=http://www.iso.org/iso/fr/home/store/catalogue_tc/catalogue_detail.htm?csnumber=64242) Partie 4: Composants et langages des modèles d`adresses postales internationales}
+
+      section.half
+        h3 Sur le géocodage
+
+        ref-doc
+            .titre = OGC Location Services (OpenLS)
+            .href = http://www.opengeospatial.org/standards/ols
+            .preview = ogc-openls.png
+
+            - Open Geospatial Consortium Inc.
+            - Septembre 2008
+            - PDF 181 pages
+
+        ref-doc
+            .titre = GeocodeJson
+
+  div.grey
+    section
+      h2 Rapports
+
+      section.half
+        h3 Adressage international
+        ref-doc
+            .titre = Universal Postal Union - Addressing the world
+            .href = http://www.upu.int/fileadmin/documentsFiles/activities/addressingAssistance/whitePaperAddressingTheWorldEn.pdf
+            .preview = upu-adressing-the-world.png
+          -
+            b
+              i An address for everyone
+          - PDF 111 pages
+
+        ref-doc
+            .titre = The World Bank - Adressage et gestion des villes
+            .href = http://groupehuit.com/sites/default/files/mediatheque/documents/Adressage%20et%20gestion%20des%20villes.pdf
+            .preview = the-world-bank-adressage.png
+
+          - PDF 292 pages
+
+      section.half
+        h3 Adressage français
+
+        ref-doc
+            .titre = GT Adresse AFIGEO
+            .preview = afigeo-gt-adresse-2011.png
+            .href = http://www.afigeo.asso.fr/documentation/category/12-gt-adresse.html?download=463:afigeo-gt-adresse-rapport-2011)
+          -
+            b
+              i Pour une politique nationale de la donnée Adresse
+
+          - Décembre 2011
+          - PDF 30 pages
