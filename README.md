@@ -1,6 +1,5 @@
-# Contenu du site web geocodage.ign.fr
+# Contenu du site web www.plateforme-nationale-geocodage.fr
 
-(actuellement hébergé en tant que v2.ign.geonef.fr)
 
 Ce site est servi par le moteur
 [Textree](https://www.npmjs.com/package/textream). La syntaxe Textree
