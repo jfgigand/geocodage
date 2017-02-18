@@ -60,6 +60,7 @@ numero,voie,code_postal,commune
 ,rue du pain de sucre,65200,LA MONGIE
 110,RUE DU GRAND BUT,59160,LOMME
 2,place de la Défense - CNIT,92053,PARIS
+2,place de la Défense - CNIT,92053,puteaux
 77,RUE D'ANTIBES BP 50287,6405,CANNES CCT2
 ,plage de favona,20144,FAVONA
 4,avenue de Valberg,6470,VALBERG
@@ -77,3 +78,11 @@ numero,voie,code_postal,commune
 ,,,mont saint-michel
 ,,,mans
 ,,,aigoual
+8,rue du huit mai 1945,,lille
+11,avenue du onze novembre,94210,
+10,rue de mont parnasse,,paris
+40,boulevard de la marne,94100,
+4,rue du moulin,,laduz
+4,rue du moulin,,valravillon
+4,rue des ponts,89110,montholon
+89,rue de la croix rouge,76780,saint lucien
